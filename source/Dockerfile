@@ -1,16 +1,19 @@
 FROM nginx:alpine
 
-# Create directory structure
+# Create directory structure first
 WORKDIR /usr/share/nginx/html
-
-# Copy the pre-built files
-COPY dist/ .
-
-# If dist doesn't exist in repo, this ensures we don't fail
 RUN mkdir -p /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy the pre-built files if they exist
+# Use a script to handle conditional copy
+COPY . /tmp/source/
+RUN if [ -d "/tmp/source/dist" ]; then \
+      cp -r /tmp/source/dist/* /usr/share/nginx/html/ || true; \
+    fi && \
+    rm -rf /tmp/source
 
 # Expose port 80
 EXPOSE 80

@@ -13,8 +13,8 @@ The CSS styling for the Homni dashboard was broken in a recent update. This roll
 
 ### 1. From Local Environment
 ```bash
-# Make sure the dist directory is included in git
-./ensure-dist.sh
+# Run the pre-deployment check
+./pre-deploy.sh
 
 # Commit and push the changes
 git add .
@@ -27,12 +27,27 @@ git push
 # Pull the latest changes from GitHub
 git pull
 
+# Run the pre-deployment check
+./pre-deploy.sh
+
 # Run the rebuild script
 ./rebuild-docker.sh
 ```
 
 ### 3. If Deployment Fails with "dist not found" Error
-If you encounter an error like "failed to calculate checksum: /dist not found", do the following:
+If you encounter an error like "failed to calculate checksum: /dist not found", try these solutions:
+
+#### Solution 1: Run the pre-deployment script
+```bash
+# Run the pre-deploy script which ensures the dist directory exists
+./pre-deploy.sh
+
+# Then try rebuilding
+./rebuild-docker.sh
+```
+
+#### Solution 2: Manual file transfer
+If Solution 1 doesn't work, manually transfer the dist directory:
 
 ```bash
 # 1. On your local machine, copy the dist directory contents
