@@ -13,6 +13,43 @@ A self-hosted monitoring dashboard for servers and services.
 - True CSS-based masonry grid layout for optimal content distribution
 - Intelligent server card ordering based on content size
 
+## Local Development
+
+This is a simplified local development version of the Homni dashboard. All Docker and production deployment elements have been removed for clarity and simplicity.
+
+### Running the Application Locally
+
+```bash
+# Start the server on default port 8080
+./scripts/serve-local.sh
+
+# Or specify a custom port
+./scripts/serve-local.sh 8088
+```
+
+Then visit http://localhost:8080 in your browser (or the custom port you specified).
+
+### Creating Backups
+
+To create a backup of the working version:
+
+```bash
+./scripts/backup-working.sh
+```
+
+This will create a timestamped backup in the `releases/backup_[timestamp]` directory.
+
+### Testing a Backup
+
+To test a specific backup:
+
+```bash
+cd releases/backup_[timestamp]
+python3 -m http.server 8085
+```
+
+Then visit http://localhost:8085 in your browser.
+
 ## Development Workflow
 
 We use a production-focused workflow for all development. We've deliberately simplified to a single production-only workflow with no separate development server.
@@ -89,12 +126,14 @@ node scripts/server.js
 - `/source` - Source code directory
   - `/source/src` - React application code
   - `/source/public` - Static assets for development
-    - `/source/public/images` - Images used by the application 
+    - `/source/public/images` - Images used by the application
+  - `/source/dist` - Contains the compiled application files
 - `/assets` - Production assets
 - `/images` - Production images directory
-- `/releases` - Deployment backups
-- `/docs` - Documentation and version information
 - `/scripts` - Server and utility scripts
+- `/releases` - Historical releases and backups
+- `/BACKUP` - Full project backups and removed components
+- `/docs` - Documentation and version information
 - `/custom.css` - Global CSS overrides for production
 
 ## Utility Scripts
@@ -107,6 +146,8 @@ The project includes several utility scripts in the `/scripts` directory to help
 - `server.js` - Simple HTTP server for serving the application
 - `start.command` - macOS-friendly script to start the server (can be double-clicked)
 - `stop.command` - macOS-friendly script to stop the server (can be double-clicked)
+- `serve-local.sh` - Starts a Python HTTP server for local development
+- `backup-working.sh` - Creates backups of the working version
 
 ### Installation and Updates
 
@@ -119,6 +160,7 @@ The project includes several utility scripts in the `/scripts` directory to help
 - `clean-assets.sh` - Cleans up old CSS and JS files in the assets directory
 - `fix-notes-visibility.sh` - Diagnostic script for fixing issues with service notes visibility
 - `fix-image-paths.sh` - Corrects image paths in CSS and HTML files to ensure proper referencing
+- `cleanup.sh` - Script to clean up the project directory and remove unnecessary files
 
 ## Documentation
 
@@ -131,55 +173,6 @@ The project includes several utility scripts in the `/scripts` directory to help
 ## License
 
 Copyright © 2024 
-
-## Docker Deployment
-
-This project can be deployed using Docker Compose. Follow these steps to get started:
-
-### Prerequisites
-
-- Docker
-- Docker Compose
-
-### Deployment Steps
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd homni
-   ```
-
-2. Build and start the containers:
-   ```bash
-   docker-compose up -d --build
-   ```
-
-3. Access the application:
-   - Frontend: http://localhost:80
-
-### Managing the Deployment
-
-- To stop the services:
-  ```bash
-  docker-compose down
-  ```
-
-- To view logs:
-  ```bash
-  docker-compose logs -f
-  ```
-
-- To rebuild and restart services:
-  ```bash
-  docker-compose up -d --build
-  ```
-
-### Production Considerations
-
-- Update the nginx configuration in `source/nginx.conf` according to your production requirements
-- Configure appropriate SSL/TLS certificates for production use
-- Adjust Docker container resources (memory, CPU) as needed in the docker-compose.yml file
-- Consider implementing health checks for the services 
 
 ## Data Privacy and Storage
 
