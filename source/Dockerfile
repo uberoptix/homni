@@ -15,6 +15,10 @@ RUN if [ -d "/tmp/source/dist" ]; then \
     fi && \
     rm -rf /tmp/source
 
+# Fix permissions - this is critical for avoiding 403 errors
+RUN chmod -R 755 /usr/share/nginx/html && \
+    chown -R nginx:nginx /usr/share/nginx/html
+
 # Expose port 80
 EXPOSE 80
 
