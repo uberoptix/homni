@@ -161,7 +161,7 @@ node scripts/server.js
 - `/source` - Source code directory
   - `/source/src` - React application code
   - `/source/public` - Static assets for development
-    - `/source/public/images` - Images used by the application
+    - `/source/public/images` - Images used by the application 
   - `/source/dist` - Contains the compiled application files
 - `/assets` - Production assets
 - `/images` - Production images directory

@@ -1201,7 +1201,7 @@ function App() {
                 </button>
                 <button 
                   className="btn-secondary" 
-                  onClick={exportData}
+                  onClick={exportData} 
                   title="Export data (Alt+E)"
                 >
                   Export
