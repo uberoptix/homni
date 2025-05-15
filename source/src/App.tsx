@@ -1087,10 +1087,11 @@ function App() {
             <div className="card">
               <h2>👋&nbsp;&nbsp;Welcome to Homni</h2>
               
-              <p><strong>Your personal dashboard</strong> for managing and accessing self-hosted services across multiple servers.</p>
+              <p className="welcome-intro"><strong>Your personal dashboard</strong> for managing and accessing self-hosted services across multiple servers.</p>
               
               <div className="privacy-note">
                 <p><em>Homni respects your privacy:</em> All data is stored securely in your browser only — nothing is ever sent or shared with the internet.</p>
+                
                 <p>You can export your configuration and take it with you anywhere. If you already have a configuration file, use the Import button below. Otherwise, <em>click Add Server to get started.</em></p>
               </div>
               
@@ -1110,7 +1111,7 @@ function App() {
                   style={{ display: 'none' }}
                 />
                 <button 
-                  className="header-button" 
+                  className="btn-secondary" 
                   onClick={() => document.getElementById('welcome-import-file')?.click()}
                   title="Import data (Alt+I)"
                 >
@@ -1192,7 +1193,7 @@ function App() {
                   style={{ display: 'none' }}
                 />
                 <button 
-                  className="header-button" 
+                  className="btn-secondary" 
                   onClick={() => document.getElementById('section-import-file')?.click()}
                   title="Import data (Alt+I)"
                 >
