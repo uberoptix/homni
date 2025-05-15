@@ -8,6 +8,8 @@ services:
     ports:
       - "808:80"
     restart: unless-stopped
+    volumes:
+      - ./source/dist:/usr/share/nginx/html:ro
     networks:
       - homni-network
 
