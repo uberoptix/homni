@@ -1,30 +1,18 @@
-FROM node:18-alpine as build
-
-# Set working directory
-WORKDIR /app
-
-# Copy package files and install dependencies
-COPY source/package*.json ./
-RUN npm install
-
-# Copy source code
-COPY source/src ./src
-COPY source/public ./public
-COPY source/index.html ./
-COPY source/vite.config.ts ./
-COPY source/tsconfig*.json ./
-
-# Build the application
-RUN npm run build
-
-# Production stage
 FROM nginx:alpine
+
+# Create directory structure
+WORKDIR /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY source/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy built assets from the build stage
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copy the index.html file
+COPY index.html /usr/share/nginx/html/
+
+# Copy all assets
+COPY assets/ /usr/share/nginx/html/assets/
+COPY images/ /usr/share/nginx/html/images/
+COPY custom.css /usr/share/nginx/html/custom.css
 
 # Fix permissions
 RUN chmod -R 755 /usr/share/nginx/html && \
