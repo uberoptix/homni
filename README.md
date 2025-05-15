@@ -29,6 +29,41 @@ This is a simplified local development version of the Homni dashboard. All Docke
 
 Then visit http://localhost:8080 in your browser (or the custom port you specified).
 
+### Docker Deployment
+
+You can also run Homni in a Docker container:
+
+```bash
+# Deploy with Docker
+./scripts/deploy-docker.sh
+```
+
+This will build and start a Docker container serving Homni at http://localhost:8088.
+
+#### Managing the Docker Container
+
+Use the management script for common Docker operations:
+
+```bash
+# Show available commands
+./scripts/manage-docker.sh
+
+# Start the container
+./scripts/manage-docker.sh start
+
+# Stop the container
+./scripts/manage-docker.sh stop
+
+# View container logs
+./scripts/manage-docker.sh logs
+
+# Check container status
+./scripts/manage-docker.sh status
+
+# Rebuild the container
+./scripts/manage-docker.sh rebuild
+```
+
 ### Creating Backups
 
 To create a backup of the working version:
