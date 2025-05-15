@@ -4,10 +4,10 @@ FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY source/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy the pre-built dist directory
-COPY dist/ /usr/share/nginx/html/
+COPY source/dist/ /usr/share/nginx/html/
 
 # Fix permissions - critical for avoiding 403 errors
 RUN chmod -R 755 /usr/share/nginx/html && \
