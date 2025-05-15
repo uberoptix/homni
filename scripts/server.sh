@@ -3,17 +3,12 @@
 # Handles starting and stopping the local development server
 
 PORT=8080
-CACHE_BUSTING=false
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
     --port=*)
       PORT="${1#*=}"
-      shift
-      ;;
-    --cache-busting)
-      CACHE_BUSTING=true
       shift
       ;;
     --stop)
@@ -26,7 +21,6 @@ while [[ $# -gt 0 ]]; do
       echo "Usage: $0 [options]"
       echo "Options:"
       echo "  --port=NUMBER       Set server port (default: 8080)"
-      echo "  --cache-busting     Enable cache-busting headers"
       echo "  --stop              Stop running server"
       echo "  --help              Show this help message"
       exit 0
@@ -44,47 +38,11 @@ echo "Starting server on port $PORT..."
 echo "Checking for existing processes..."
 pkill -f "python3 -m http.server $PORT" || true
 
-# Prepare web directory
-cd "$(dirname "$0")/.." || exit 1
-if [ ! -d "web" ]; then
-  echo "Error: web directory not found"
-  exit 1
-fi
-
 # Change to web directory
-cd web || exit 1
+cd "$(dirname "$0")/web" || exit 1
 
-if [ "$CACHE_BUSTING" = true ]; then
-  # Create a cache-busting server script
-  echo "Using cache-busting server..."
-  echo '#!/usr/bin/env python3
-import http.server
-import socketserver
-import sys
-
-PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
-
-class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
-    def end_headers(self):
-        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
-        self.send_header("Pragma", "no-cache")
-        self.send_header("Expires", "0")
-        super().end_headers()
-
-Handler = NoCacheHTTPRequestHandler
-
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print(f"Serving with cache-busting headers at port {PORT}")
-    httpd.serve_forever()
-' > server_cache_busting.py
-  chmod +x server_cache_busting.py
-  
-  # Start the Python HTTP server with cache-busting headers
-  python3 server_cache_busting.py $PORT &
-else
-  # Start a standard Python HTTP server
-  python3 -m http.server $PORT &
-fi
+# Start a standard Python HTTP server
+python3 -m http.server $PORT &
 
 SERVER_PID=$!
 
