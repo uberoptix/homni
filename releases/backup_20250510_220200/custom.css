@@ -1,0 +1,1372 @@
+/* 
+ * Homni Custom Styles 
+ * This file contains style overrides for the application
+ */
+
+/* ======== STANDARDIZED SPACING SYSTEM ======== */
+/* These values establish a consistent rhythm throughout the UI */
+:root {
+  /* Spacing tokens - multiples of 4px (0.25rem) */
+  --space-1: 0.25rem !important;  /* 4px - Micro spacing */
+  --space-2: 0.5rem !important;   /* 8px - Tight spacing */
+  --space-3: 0.75rem !important;  /* 12px - Default compact spacing */
+  --space-4: 1rem !important;     /* 16px - Default element spacing */
+  --space-5: 1.25rem !important;  /* 20px - Card internal spacing */
+  --space-6: 1.5rem !important;   /* 24px - Standard component spacing */
+  --space-8: 2rem !important;     /* 32px - Major container spacing */
+  --space-12: 3rem !important;    /* 48px - Section spacing */
+  
+  /* Edge spacing - consistent container padding */
+  --container-padding-x: 2rem !important; /* 32px horizontal padding */
+  --container-padding-y: 1rem !important; /* 16px vertical padding */
+  
+  /* Responsive adjustments */
+  --container-padding-x-small: 1rem !important; /* 16px horizontal padding on small screens */
+}
+
+/* Layout Container with standardized spacing */
+.container {
+  padding: var(--container-padding-y) var(--container-padding-x) !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Masonry grid container - TRUE MASONRY LAYOUT */
+.masonry-grid {
+  width: 100% !important;
+  max-width: 1600px !important;
+  margin: 0 auto !important;
+  column-count: 3 !important; /* Reduced from 4 to 3 columns for better distribution */
+  column-gap: var(--space-5) !important; /* 20px gap standardized */
+  padding: 0 !important; /* Remove padding as it's handled by servers-grid now */
+  box-sizing: border-box !important;
+}
+
+/* Servers grid container */
+.servers-grid {
+  margin-top: 0 !important; /* Remove top margin as section header now has proper padding */
+  margin-bottom: var(--space-4) !important; /* Standardized to 1rem (16px) */
+  padding: 0 var(--container-padding-x) !important; /* Match the section header padding */
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* ======== SERVER CARD STYLES ======== */
+/* Force server cards to use true masonry layout */
+.server-card {
+  display: inline-block !important; /* Critical for masonry layout */
+  width: 100% !important; /* Take full width of column */
+  box-sizing: border-box !important;
+  break-inside: avoid !important; /* Prevent cards from breaking across columns */
+  padding: var(--space-5) !important; /* Standardized to 1.25rem (20px) */
+  margin-bottom: var(--space-5) !important; /* Standardized to 1.25rem (20px) */
+  background-color: var(--server-background) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  border: none !important;
+  transition: none !important; /* Remove transition effects */
+  min-width: 280px !important; /* Minimum width to ensure readability */
+  max-width: 100% !important; /* Let the card take the full column width */
+}
+
+/* Remove hover effects on all cards */
+.server-card:hover,
+.card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  transition: none !important;
+}
+
+/* Server header styling */
+.server-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: var(--space-3) !important; /* Standardized to 0.75rem (12px) */
+  flex-wrap: wrap !important;
+  gap: var(--space-2) !important; /* Standardized to 0.5rem (8px) */
+  width: 100% !important; /* Ensure it takes full width */
+}
+
+.server-header h2 {
+  margin: 0 !important;
+  color: var(--service-text) !important;
+  font-size: 1.25rem !important;
+  font-weight: 500 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+  flex: 1 !important; /* Allow header to take available space */
+  min-width: 0 !important; /* Important for text-overflow to work */
+}
+
+/* Service styling */
+.services-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: var(--space-3) !important; /* Standardized to 0.75rem (12px) */
+  width: 100% !important;
+  margin-top: var(--space-3) !important; /* Standardized to 0.75rem (12px) */
+  padding-left: 0 !important; /* Remove any potential padding */
+}
+
+/* Service items styling - align with IP address */
+.service-item {
+  padding: 0.75rem !important;
+  padding-left: 36px !important; /* Match the hostname and notes padding */
+  margin-left: 0 !important; /* Ensure no additional margin shifts alignment */
+  border-radius: 4px !important;
+  background-color: var(--service-background) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  transition: all 0.2s !important;
+  height: 40px !important;
+  max-height: 40px !important;
+  box-sizing: border-box !important;
+  position: relative !important; /* For proper positioning relative to config icon */
+  width: 100% !important; /* Ensure full width */
+  min-width: 0 !important; /* Allow text-overflow to work */
+}
+
+/* Service wrapper positioning */
+.service-wrapper {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-width: 0 !important; /* Allow children to shrink below content size */
+}
+
+.service-link {
+  flex-grow: 1 !important;
+  min-width: 0 !important; /* Allow text-overflow to work */
+  width: 100% !important;
+}
+
+/* Service name and port text */
+.service-name, .service-port {
+  position: relative !important;
+  z-index: 1 !important; /* Above the background */
+}
+
+.service-name {
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  flex: 1 !important;
+  min-width: 0 !important; /* Allow text to be truncated */
+  max-width: calc(100% - 60px) !important; /* Leave room for port */
+}
+
+.service-port {
+  color: var(--secondary-text) !important;
+  font-size: 0.9rem !important;
+  white-space: nowrap !important;
+  margin-left: 8px !important;
+}
+
+/* ======== BUTTON STYLING ======== */
+
+/* Primary Button (Add Server) */
+.add-button,
+.btn-primary {
+  background-color: var(--primary-button) !important;
+  color: var(--primary-button-text) !important;
+  border: none !important;
+  padding: var(--space-2) var(--space-4) !important; /* Standardized to 0.5rem 1rem */
+  border-radius: 4px !important;
+  font-size: 0.9rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  height: 38px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  min-width: 90px !important;
+}
+
+.add-button:hover,
+.btn-primary:hover {
+  background-color: color-mix(in srgb, var(--primary-button) 90%, white) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Secondary Button (Import, Export, Sort buttons) */
+.header-button, 
+.import-button, 
+.export-button,
+.sort-button,
+.btn-secondary,
+.btn-cancel {
+  background-color: var(--secondary-button) !important;
+  color: var(--secondary-button-text) !important;
+  border: none !important;
+  padding: var(--space-2) var(--space-4) !important; /* Standardized to 0.5rem 1rem */
+  border-radius: 4px !important;
+  font-size: 0.9rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  height: 38px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  min-width: 90px !important;
+}
+
+.header-button:hover, 
+.import-button:hover, 
+.export-button:hover,
+.sort-button:hover,
+.btn-secondary:hover,
+.btn-cancel:hover {
+  background-color: color-mix(in srgb, var(--secondary-button) 90%, white) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Active state for secondary buttons */
+.sort-button.active {
+  background-color: var(--primary-button) !important;
+  color: var(--primary-button-text) !important;
+}
+
+.sort-button.active:hover {
+  background-color: color-mix(in srgb, var(--primary-button) 90%, white) !important;
+}
+
+/* Tertiary Button (Add Service, small actions within cards) */
+.small-button,
+.server-actions .small-button {
+  background-color: var(--server-background) !important; /* Transparent background */
+  color: var(--accent-text) !important; /* Accent text color */
+  border: 1px solid var(--accent-text) !important; /* Accent text border */
+  padding: var(--space-2) var(--space-4) !important; /* Standardized to 0.5rem 1rem */
+  border-radius: 4px !important;
+  font-size: 0.9rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  height: 38px !important; /* Match button height standard */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  min-width: 90px !important;
+  box-shadow: none !important;
+}
+
+.small-button:hover,
+.server-actions .small-button:hover {
+  background-color: var(--primary-button) !important; /* Primary button background on hover */
+  color: var(--primary-button-text) !important; /* Primary button text color */
+  border-color: var(--primary-button) !important; /* Match the background color */
+  transform: none !important;
+}
+
+/* Delete button specific styling */
+.small-button.delete,
+.btn-delete {
+  background-color: transparent !important;
+  border: 1px solid var(--status-red) !important;
+  color: var(--status-red) !important;
+}
+
+.small-button.delete:hover,
+.btn-delete:hover {
+  background-color: var(--status-red) !important;
+  color: var(--primary-button-text) !important;
+  border-color: var(--status-red) !important;
+}
+
+/* Sorting controls */
+.sorting-options {
+  display: flex !important;
+  align-items: center !important;
+  margin-bottom: 0 !important;
+  gap: var(--space-3) !important; /* Increased from 0.5rem to 0.75rem (12px) for better spacing */
+  color: var(--secondary-text) !important;
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+/* Search input specific styling override */
+.search-input {
+  border: none !important;
+  padding: 8px 35px 8px 15px !important;
+}
+
+.search-input:focus {
+  border: 1px solid var(--accent-text) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.sort-buttons {
+  display: flex !important;
+  gap: var(--space-2) !important; /* Standardized to 0.5rem (8px) */
+}
+
+/* Section header layout with standardized spacing */
+.section-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: var(--space-6) !important; /* Standardized to 1.5rem (24px) */
+  flex-wrap: wrap !important;
+  gap: var(--space-4) !important; /* Standardized to 1rem (16px) */
+  padding: var(--space-4) var(--container-padding-x) !important; /* 1rem 2rem (16px 32px) */
+  width: 100% !important;
+  box-sizing: border-box !important;
+  background-color: transparent !important;
+}
+
+.section-buttons {
+  display: flex !important;
+  gap: var(--space-3) !important; /* Increased from 0.5rem to 0.75rem (12px) for better spacing */
+  flex-wrap: wrap !important;
+}
+
+/* Section title styling */
+.section-title {
+  margin: 0 !important;
+  color: var(--accent-text) !important;
+  font-weight: 500 !important;
+  font-size: 1.4rem !important;
+  position: static !important; /* Override any absolute positioning */
+  transform: none !important; /* Override any transform */
+  left: auto !important; /* Override any left positioning */
+  text-align: center !important;
+  flex: 1 !important; /* Take available space */
+  min-width: 0 !important; /* Allow proper flex shrinking */
+}
+
+/* Active sort button styling */
+.sort-button.active {
+  background-color: var(--primary-button) !important;
+  color: var(--primary-button-text) !important;
+  font-weight: 500 !important;
+}
+
+/* Responsive adjustments for section header */
+@media (max-width: 900px) {
+  .section-header {
+    padding: var(--space-4) var(--container-padding-x-small) !important; /* 1rem 1rem on smaller screens */
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: var(--space-3) !important; /* Reduced gap on smaller screens */
+  }
+  
+  .section-title {
+    width: 100% !important;
+    margin-bottom: var(--space-3) !important;
+    text-align: left !important; /* Left align on mobile */
+  }
+  
+  .add-button,
+  .header-button, 
+  .import-button, 
+  .export-button {
+    flex-grow: 1 !important; /* Allow buttons to grow on small screens */
+    min-width: 80px !important; /* Slightly smaller minimum width */
+  }
+  
+  .section-buttons {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+  
+  .sorting-options {
+    margin-top: var(--space-3) !important; /* Reduced from 1rem to 0.75rem */
+    margin-left: 0 !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+}
+
+/* ======== DIALOG STYLES ======== */
+/* Dialog overlay and positioning */
+.dialog {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  z-index: 100 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.dialog-content {
+  background-color: var(--server-background) !important;
+  padding: var(--space-8) !important; /* Standardized to 2rem (32px) */
+  border-radius: 8px !important;
+  width: 100% !important;
+  max-width: 500px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  z-index: 101 !important;
+  position: relative !important;
+}
+
+.dialog-title {
+  margin-top: 0 !important;
+  margin-bottom: var(--space-6) !important; /* Standardized to 1.5rem (24px) */
+  color: var(--service-text) !important;
+  font-weight: 500 !important;
+  font-size: 1.5rem !important;
+}
+
+.dialog-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: var(--space-4) !important; /* Standardized to 1rem (16px) */
+  margin-top: var(--space-6) !important; /* Standardized to 1.5rem (24px) */
+}
+
+.btn {
+  height: 38px !important;
+  padding: 0 1rem !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+
+.btn-primary:hover {
+  background-color: color-mix(in srgb, var(--primary-button) 90%, white) !important;
+  transform: none !important;
+}
+
+.btn-cancel:hover {
+  background-color: color-mix(in srgb, var(--secondary-button) 90%, white) !important;
+  transform: none !important;
+}
+
+/* Position auto-margin for delete buttons */
+.btn-delete {
+  margin-right: auto !important;
+}
+
+/* Form elements */
+.form-group {
+  margin-bottom: var(--space-4) !important; /* Standardized to 1rem (16px) */
+  position: relative !important;
+}
+
+.form-group label {
+  display: block !important;
+  margin-bottom: var(--space-2) !important; /* Standardized to 0.5rem (8px) */
+  color: var(--server-text) !important;
+  font-size: 0.9rem !important;
+}
+
+input, textarea {
+  width: 100% !important;
+  padding: var(--space-2) !important; /* Standardized to 0.5rem (8px) */
+  border: 1px solid var(--input-border, #444) !important;
+  background-color: var(--service-background) !important;
+  color: var(--server-text) !important;
+  border-radius: 4px !important;
+  font-size: 1rem !important;
+  box-sizing: border-box !important;
+}
+
+input:focus, textarea:focus {
+  outline: none !important;
+  border-color: var(--accent-button, var(--service-text)) !important;
+  box-shadow: none !important;
+}
+
+/* Restore server card content styling */
+.server-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: var(--space-3) !important; /* Standardized to 0.75rem (12px) */
+  flex-wrap: wrap !important;
+  gap: var(--space-2) !important; /* Standardized to 0.5rem (8px) */
+}
+
+.server-header h2 {
+  margin: 0 !important;
+  color: var(--service-text) !important;
+  font-size: 1.25rem !important;
+  font-weight: 500 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Small button adjustments */
+.small-button {
+  background-color: transparent !important;
+  color: var(--service-text) !important;
+  border: 1px solid var(--service-text) !important;
+  padding: 0.25rem 0.5rem !important;
+  cursor: pointer !important;
+  border-radius: 4px !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s !important;
+  white-space: nowrap !important;
+  height: 38px !important; /* Match header buttons height */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-width: 90px !important; /* Ensure minimum width */
+}
+
+.small-button:hover {
+  background-color: var(--primary-button) !important;
+  color: var(--primary-button-text) !important;
+  border-color: var(--primary-button) !important;
+  transform: none !important;
+}
+
+.small-button.delete {
+  border-color: var(--status-red) !important;
+  color: var(--status-red) !important;
+}
+
+.small-button.delete:hover {
+  background-color: var(--status-red) !important;
+  color: var(--primary-button-text) !important;
+  border-color: var(--status-red) !important;
+  transform: none !important;
+}
+
+/* Improve server notes display */
+.server-notes {
+  color: var(--secondary-text) !important;
+  font-size: 0.85rem !important;
+  font-style: italic !important;
+  margin-top: 0 !important;
+  margin-bottom: var(--space-3) !important; /* Standardized to 0.75rem (12px) */
+  white-space: pre-wrap !important;
+  line-height: 1.4 !important;
+  padding-left: 36px !important; /* Match the hostname padding */
+}
+
+.server-actions {
+  display: flex !important;
+  gap: var(--space-2) !important; /* Standardized to 0.5rem (8px) */
+  flex-wrap: wrap !important;
+}
+
+/* Config icon styling */
+.config-icon {
+  width: 16px !important;
+  height: 16px !important;
+  position: absolute !important;
+  left: 10px !important; /* Consistent left position for all config icons */
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  background-color: var(--secondary-text) !important;
+  -webkit-mask-image: url('/images/config.png') !important;
+  -webkit-mask-size: contain !important;
+  -webkit-mask-repeat: no-repeat !important;
+  -webkit-mask-position: center !important;
+  mask-image: url('/images/config.png') !important;
+  mask-size: contain !important;
+  mask-repeat: no-repeat !important;
+  mask-position: center !important;
+  z-index: 2 !important; /* Ensure icon is above other elements */
+}
+
+.config-icon:hover {
+  background-color: var(--accent-text) !important;
+}
+
+/* Debug borders - uncomment to see layout structure */
+/* 
+.server-card:nth-child(3n+1) { border: 3px solid red !important; }
+.server-card:nth-child(3n+2) { border: 3px solid green !important; }
+.server-card:nth-child(3n+3) { border: 3px solid blue !important; }
+*/
+
+/* ======== END MASONRY LAYOUT STYLES ======== */
+
+/* Responsive styling for the flex layout */
+@media (min-width: 1200px) {
+  .server-card {
+    flex: 1 1 350px !important;
+    max-width: 450px !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1199px) {
+  .server-card {
+    flex: 1 1 350px !important; 
+    max-width: 450px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .server-card {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .section-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  
+  .sorting-options {
+    margin-top: var(--space-4) !important; /* Added top margin for spacing */
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* Checkbox styling */
+.checkbox-group {
+  margin-top: var(--space-2) !important; /* Standardized to 0.5rem (8px) */
+}
+
+.checkbox-label {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-2) !important; /* Standardized to 0.5rem (8px) */
+  cursor: pointer !important;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  accent-color: var(--accent-button) !important;
+}
+
+.checkbox-label span {
+  font-size: 0.9rem !important;
+}
+
+/* ======== COLOR PALETTE DIALOG SPECIFIC STYLES ======== */
+/* Theme buttons with standardized spacing */
+.theme-selector {
+  display: flex !important;
+  gap: var(--space-6) !important; /* Standardized to 1.5rem (24px) */
+  margin-bottom: var(--space-4) !important; /* Standardized to 1rem (16px) */
+  margin-top: var(--space-4) !important; /* Standardized to 1rem (16px) */
+  justify-content: center !important;
+}
+
+.theme-button {
+  background: transparent !important;
+  border: 2px solid transparent !important;
+  border-radius: 8px !important;
+  padding: 0.25rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 130px !important;
+}
+
+.theme-preview {
+  width: 100% !important;
+  height: 80px !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  margin-bottom: 0.5rem !important;
+  box-shadow: none !important;
+  position: relative !important;
+}
+
+.theme-button span {
+  color: var(--server-text) !important;
+  font-size: 0.9rem !important;
+}
+
+/* Color picker layouts */
+.color-categories.simplified {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+  margin-top: 1rem !important;
+  width: 100% !important;
+  padding: 0.5rem 0 !important;
+}
+
+.color-picker-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 0.5rem !important;
+  width: 100% !important;
+}
+
+.color-picker-label {
+  flex: 1 !important;
+  font-size: 0.9rem !important;
+  min-width: 140px !important;
+}
+
+.color-picker-input {
+  width: 100px !important;
+  padding: 0.25rem !important;
+  text-align: center !important;
+  font-family: monospace !important;
+  border-radius: 3px !important;
+  border: none !important;
+  background-color: var(--service-background) !important;
+}
+
+.color-picker-spacer {
+  height: 0.75rem !important;
+  border-bottom: 1px solid var(--secondary-text) !important;
+  margin-bottom: 0.5rem !important;
+  margin-top: -0.25rem !important;
+  width: 100% !important;
+}
+
+/* Color picker inputs */
+input[type="color"] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 36px !important;
+  height: 30px !important;
+  padding: 0 !important;
+  border: 1px solid var(--secondary-text) !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  background-color: transparent !important;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: none !important;
+  border-radius: 3px !important;
+}
+
+/* Palette actions with standardized spacing */
+.palette-actions {
+  margin-top: var(--space-6) !important; /* Standardized to 1.5rem (24px) */
+  display: flex !important;
+  justify-content: space-between !important;
+}
+
+.palette-action-buttons {
+  display: flex !important;
+  gap: var(--space-4) !important; /* Standardized to 1rem (16px) */
+}
+
+.btn-reset {
+  background-color: transparent !important;
+  border: 1px solid var(--primary-button) !important;
+  color: var(--primary-button) !important;
+  height: 38px !important;
+  padding: var(--space-2) var(--space-4) !important; /* Standardized to 0.5rem 1rem */
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+
+.btn-reset:hover {
+  background-color: var(--primary-button) !important;
+  color: white !important;
+  transform: none !important;
+}
+
+/* Layout Container */
+.container {
+  padding: 0.5rem 2rem !important;
+}
+
+/* Responsive Styles - Updated for Masonry */
+@media (max-width: 1100px) and (min-width: 800px) {
+  /* Commented out old column-count styling
+  .servers-grid {
+    column-count: 2;
+  }
+  */
+}
+
+@media (max-width: 799px) {
+  /* Commented out old column-based styling
+  .servers-grid {
+    column-count: 1;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  */
+  
+  .container {
+    padding: 0.5rem 1rem !important;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .section-header {
+    padding-top: 1rem;
+  }
+}
+
+/* No services message */
+.no-services {
+  padding: 1rem 0 !important;
+  text-align: center !important;
+  color: var(--secondary-text) !important;
+  font-style: italic !important;
+  background-color: rgba(51, 51, 51, 0.3) !important;
+  border-radius: 4px !important;
+  margin: 0.5rem 0 1.25rem !important;
+}
+
+/* Bottom spacing */
+body {
+  padding-bottom: 0.5rem;  /* Reduced from 1rem */
+}
+
+/* Make the app use full page width but center content */
+#root {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+}
+
+body, html {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+}
+
+/* Ensure header spans full width */
+.header {
+  width: 100% !important;
+  padding: 1rem 2rem !important;
+  box-sizing: border-box !important;
+  gap: 1.5rem !important; /* Standardize to 1.5rem (24px) instead of 25px */
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.header-logo {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.625rem !important; /* Standardize to 0.625rem (10px) */
+  flex-shrink: 0 !important;
+  margin-right: 0.625rem !important; /* Standardize to 0.625rem (10px) */
+}
+
+.search-container {
+  flex-grow: 1 !important;
+  max-width: 600px !important;
+  margin: 0 1rem !important; /* Standardize to 1rem (16px) instead of 15px */
+}
+
+/* Updated status colors matching the specified hex codes */
+:root {
+  --status-red: #ED6B5E !important;    /* Red */
+  --status-amber: #F5BF4F !important;  /* Amber */
+  --status-green: #61C554 !important;  /* Green */
+}
+
+/* Remove hover animations */
+.card, 
+.server-card,
+.add-button {
+  transition: none !important;
+}
+
+.card:hover, 
+.server-card:hover,
+.add-button:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Service wrapper fixes to ensure proper alignment */
+.service-wrapper {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  height: 40px !important;  /* Increase height to match buttons */
+  min-height: 40px !important;  /* Ensure consistent height */
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure service status icons are properly aligned */
+.service-status {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin-right: 8px !important;
+}
+
+/* Adjust palette icon size */
+.header-palette-icon {
+  width: 1.25rem !important; /* Standardize to 1.25rem (20px) */
+  height: 1.25rem !important; /* Standardize to 1.25rem (20px) */
+}
+
+/* Reduce spacing between buttons row and server cards by 20% */
+.section-header {
+  margin-bottom: 1.2rem !important;
+}
+
+/* Triple the spacing between dialog titles and first line of text */
+.dialog-content h2.dialog-title {
+  margin-bottom: 1rem !important;
+}
+
+/* Triple the spacing between theme selection text and theme buttons */
+.dialog-content p {
+  margin-bottom: 1rem !important;
+}
+
+/* Footer spacing adjustment */
+.footer {
+  padding-top: 0 !important;
+  padding-bottom: 30px !important;
+}
+
+/* Remove hover effects on the welcome card */
+.welcome-section .card {
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  border: none !important;
+}
+
+.welcome-section .card:hover {
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  filter: none !important;
+  border: none !important;
+  background-color: var(--server-background) !important;
+}
+
+/* Welcome Section Styling */
+.welcome-section .card h2 {
+  margin-bottom: 1.5rem !important;
+  font-size: 1.8rem !important;
+}
+
+.welcome-section .card p {
+  font-size: 1.1rem !important;
+  line-height: 1.5 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.welcome-section .card p strong {
+  color: var(--service-text) !important;
+}
+
+.privacy-note {
+  background-color: transparent !important;
+  border-left: 3px solid var(--service-text) !important;
+  padding: 1rem !important;
+  margin-bottom: 2rem !important;
+  border-radius: 0 4px 4px 0 !important;
+}
+
+.privacy-note p {
+  margin-bottom: 0.8rem !important;
+  font-size: 1rem !important;
+}
+
+.privacy-note p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.privacy-note p em {
+  font-style: normal !important;
+  color: var(--service-text) !important;
+  font-weight: 500 !important;
+}
+
+.welcome-buttons {
+  margin-top: 2rem !important;
+}
+
+/* Keyboard Shortcuts Styling */
+.keyboard-shortcuts-info {
+  margin-top: 2rem !important;
+}
+
+.keyboard-shortcuts-info h3 {
+  margin-bottom: 1.2rem !important;
+  color: var(--service-text) !important;
+}
+
+.keyboard-shortcuts-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+  gap: 1rem !important;
+}
+
+.shortcut-item {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: center !important;
+  background-color: var(--service-background) !important;
+  border-radius: 6px !important;
+  padding: 0.75rem 0.5rem !important; /* Adjusted padding */
+  box-shadow: none !important;
+  border: none !important;
+  height: auto !important;
+  min-height: 55px !important; /* Further reduced minimum height */
+  max-width: 100% !important;
+}
+
+.shortcut-item:hover {
+  box-shadow: none !important;
+  border: none !important;
+  transform: none !important;
+  filter: none !important;
+  background-color: var(--service-background) !important;
+}
+
+.shortcut-keys {
+  margin-bottom: 0.25rem !important;
+  margin-top: 0 !important;
+}
+
+kbd {
+  background-color: var(--header-background) !important;
+  color: var(--service-text) !important; /* Changed to match palette text color */
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 4px !important;
+  font-family: monospace !important;
+  padding: 0.15rem 0.3rem !important; 
+  margin: 0 0.1rem !important;
+  font-size: 0.85rem !important;
+}
+
+.shortcut-description {
+  color: var(--secondary-text) !important;
+  font-size: 0.85rem !important; /* Match server notes size */
+  margin: 0 !important;
+  line-height: 1.4 !important; /* Match server notes line height */
+  font-style: italic !important; /* Match server notes style */
+  font-weight: normal !important;
+}
+
+/* ======== NOTIFICATIONS ======== */
+/* Target the specific save-notification class used in the app */
+.save-notification {
+  position: fixed !important;
+  bottom: var(--space-5) !important; /* Standardized to 1.25rem (20px) */
+  right: var(--space-5) !important; /* Standardized to 1.25rem (20px) */
+  background-color: var(--server-background) !important; /* Tertiary button style - transparent background */
+  color: var(--accent-text) !important; /* Tertiary button style - accent text color */
+  padding: 0 var(--space-4) !important; /* Standardized horizontal padding */
+  border-radius: 4px !important; /* Match button border-radius */
+  box-shadow: none !important; /* No shadow, like tertiary buttons */
+  z-index: 1000 !important;
+  max-width: 350px !important;
+  animation: slide-in-notification 0.3s ease-out !important;
+  border: 1px solid var(--accent-text) !important; /* Tertiary button style - accent text border */
+  top: auto !important; /* Override any top positioning */
+  left: auto !important; /* Override any left positioning */
+  margin: 0 !important; /* Reset margins */
+  transform: none !important; /* Reset transforms */
+  height: 38px !important; /* Match button height */
+  line-height: 38px !important; /* Center text vertically */
+  display: flex !important;
+  align-items: center !important;
+  min-width: 200px !important; /* Ensure reasonable minimum width */
+}
+
+/* Error notification variant */
+.save-notification.error {
+  background-color: var(--server-background) !important;
+  color: var(--status-red) !important;
+  border-color: var(--status-red) !important;
+}
+
+/* Success notification variant */
+.save-notification.success {
+  background-color: var(--server-background) !important;
+  color: var(--status-green) !important;
+  border-color: var(--status-green) !important;
+}
+
+/* Animation for sliding in from right */
+@keyframes slide-in-notification {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Ensure notification text is properly visible */
+.save-notification span {
+  color: inherit !important; /* Inherit color from parent notification */
+  font-size: 0.9rem !important;
+  font-weight: normal !important;
+}
+
+/* Server hostname and config icon alignment */
+.server-hostname-container {
+  display: flex !important;
+  align-items: center !important;
+  margin-top: 0 !important;
+  margin-bottom: 0.75rem !important;
+  position: relative !important; /* For absolute positioning */
+  width: 100% !important;
+  min-width: 0 !important; /* Allow text to truncate */
+}
+
+.server-hostname {
+  color: var(--secondary-text) !important;
+  margin: 0 !important;
+  font-size: 0.9rem !important;
+  padding-left: 36px !important; /* Match the service items padding */
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.config-icon {
+  width: 16px !important;
+  height: 16px !important;
+  position: absolute !important;
+  left: 10px !important; /* Consistent left position for all config icons */
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  background-color: var(--secondary-text) !important;
+  -webkit-mask-image: url('/images/config.png') !important;
+  -webkit-mask-size: contain !important;
+  -webkit-mask-repeat: no-repeat !important;
+  -webkit-mask-position: center !important;
+  mask-image: url('/images/config.png') !important;
+  mask-size: contain !important;
+  mask-repeat: no-repeat !important;
+  mask-position: center !important;
+  z-index: 2 !important; /* Ensure icon is above other elements */
+}
+
+.config-icon:hover {
+  background-color: var(--accent-text) !important;
+}
+
+/* Service item hover effect */
+.service-item:hover {
+  background-color: var(--hover-service-item) !important;
+}
+
+/* ======== RESPONSIVE LAYOUT ======== */
+/* Responsive column-count adjustments */
+@media (max-width: 1400px) {
+  .masonry-grid {
+    column-count: 2 !important; /* Reduced from 3 to 2 columns on medium-large screens */
+    max-width: 1200px !important; /* Adjusted max-width for better column sizing */
+  }
+  
+  .servers-grid {
+    padding: 0 var(--container-padding-x-small) !important; /* Reduced padding on smaller screens */
+  }
+}
+
+@media (max-width: 900px) {
+  .masonry-grid {
+    column-count: 1 !important; /* 1 column on small screens */
+    max-width: 600px !important; /* Constrained width for better readability */
+  }
+  
+  .servers-grid {
+    padding: 0 var(--container-padding-x-small) !important; /* Reduced padding on smaller screens */
+  }
+  
+  .section-header {
+    padding-top: var(--space-4) !important; /* Reduced top padding on small screens */
+  }
+}
+
+/* Add Service button styling */
+.small-button.add-service, 
+button.add-service,
+a.add-service {
+  background-color: var(--accent-button) !important;
+  color: var(--primary-button-text) !important;
+  border: none !important;
+  padding: var(--space-2) var(--space-4) !important; /* Standardized to 0.5rem 1rem */
+  border-radius: 4px !important;
+  font-size: 0.9rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  height: 38px !important; /* Match header buttons height */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  text-decoration: none !important;
+}
+
+.small-button.add-service:hover,
+button.add-service:hover,
+a.add-service:hover {
+  background-color: var(--accent-button-hover, var(--accent-button)) !important;
+  opacity: 0.9 !important;
+  transform: none !important;
+}
+
+/* Add Service button specific styling */
+.server-actions .small-button {
+  background-color: transparent !important;
+  color: var(--accent-text) !important;
+  border: 1px solid var(--accent-text) !important;
+  height: 38px !important;
+}
+
+.server-actions .small-button:hover {
+  background-color: var(--primary-button) !important; /* Primary button background on hover */
+  color: var(--primary-button-text) !important; /* Primary button text color */
+  border-color: var(--primary-button) !important; /* Match the background color */
+  transform: none !important;
+}
+
+/* Adjust text sizing */
+/* Replaced with global transform:scale on body element */
+
+/* Adjust dialog and form elements */
+/* Replaced with global transform:scale on body element */
+
+/* Adjust spacing */
+/* Replaced with global transform:scale on body element */
+
+/* Make the app use full page width but center content */
+.plex-app {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  min-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+}
+
+/* Header palette button styling */
+.header-palette-button {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0.625rem !important; /* Standardize to 0.625rem (10px) */
+  border-radius: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  color: var(--secondary-text) !important;
+  transition: all 0.2s !important;
+}
+
+/* Media queries for responsive spacing */
+@media (max-width: 900px) {
+  .header {
+    flex-wrap: wrap !important;
+    padding: 1rem !important;
+    gap: 1rem !important; /* Reduce gap on small screens */
+  }
+  
+  .header-logo {
+    order: 1 !important;
+    flex-basis: 50% !important;
+  }
+  
+  .header-palette-button {
+    order: 2 !important;
+  }
+  
+  .search-container {
+    order: 3 !important;
+    flex-basis: 100% !important;
+    max-width: 100% !important;
+    margin: 0.75rem 0 0 0 !important; /* Simplified top margin only */
+  }
+}
+
+@media (max-width: 600px) {
+  .header-palette-button {
+    margin-left: 1rem !important;
+    margin-right: 0 !important; /* Removed negative margin for consistency */
+  }
+}
+
+/* Ensure buttons have proper margin at all screen sizes */
+.add-button,
+.btn-primary,
+.header-button, 
+.import-button, 
+.export-button,
+.sort-button,
+.btn-secondary,
+.btn-cancel {
+  margin: 0 !important; /* Reset any potential margins */
+}
+
+/* Ensure consistent button width and height */
+.add-button,
+.btn-primary,
+.header-button, 
+.import-button, 
+.export-button,
+.sort-button,
+.btn-secondary,
+.btn-cancel,
+.small-button,
+.server-actions .small-button,
+.btn-reset {
+  height: 38px !important;
+  min-width: 90px !important;
+  box-sizing: border-box !important;
+}
+
+
+
