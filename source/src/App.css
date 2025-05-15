@@ -166,15 +166,12 @@ html {
 .card {
   background-color: var(--server-background);
   border-radius: 8px;
-  box-shadow: none;
   padding: 1.5rem;
   margin-bottom: 1rem;
-  transition: transform 0.2s;
 }
 
 .card:hover {
   transform: none;
-  background-color: transparent;
 }
 
 .welcome-section {
@@ -312,6 +309,23 @@ html {
   flex-wrap: wrap;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
+}
+
+.welcome-buttons .btn-secondary {
+  background-color: var(--secondary-button);
+  color: var(--secondary-button-text);
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: all 0.2s;
+  height: var(--height-button);
+}
+
+.welcome-buttons .btn-secondary:hover {
+  background-color: var(--secondary-button-hover);
 }
 
 kbd {
@@ -522,6 +536,7 @@ kbd {
   overflow-y: auto;
   position: relative;
   margin: auto;
+  box-shadow: none;
 }
 
 /* Palette Dialog specific styles */
@@ -535,6 +550,7 @@ kbd {
   overflow-y: auto;
   position: relative;
   margin: auto;
+  box-shadow: none;
 }
 
 /* Theme selector styles */
@@ -711,6 +727,7 @@ kbd {
   border-radius: 3px;
   border: none;
   background-color: var(--service-background);
+  color: var(--server-text);
 }
 
 .color-preview {
@@ -730,41 +747,46 @@ kbd {
   margin-top: 0.735rem;
   display: flex;
   justify-content: space-between;
-}
-
-.palette-action-buttons {
-  display: flex;
   gap: 1rem;
 }
 
-.small-button {
-  background-color: transparent;
-  color: var(--service-text);
-  border: 1px solid var(--service-text);
-  white-space: nowrap;
-  height: 38px;
-  padding: 0 1rem;
-  box-shadow: none;
+.palette-actions .btn-reset {
+  background-color: var(--secondary-button);
+  color: var(--secondary-button-text);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
 }
 
-.small-button:hover {
+.palette-actions .btn-cancel {
+  background-color: var(--secondary-button);
+  color: var(--secondary-button-text);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.palette-actions .btn-primary {
   background-color: var(--primary-button);
   color: var(--primary-button-text);
-  border-color: var(--primary-button);
-  transform: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
 }
 
-.small-button.delete {
-  border-color: var(--status-red);
-  color: var(--status-red);
-  background-color: transparent;
+.palette-actions .btn-reset:hover,
+.palette-actions .btn-cancel:hover {
+  background-color: var(--secondary-button-hover);
 }
 
-.small-button.delete:hover {
-  background-color: var(--status-red);
-  color: var(--primary-button-text);
-  border-color: var(--status-red);
-  transform: none;
+.palette-actions .btn-primary:hover {
+  background-color: var(--primary-button-hover);
 }
 
 /* For color input fields */
