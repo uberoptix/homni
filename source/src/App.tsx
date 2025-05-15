@@ -1200,9 +1200,8 @@ function App() {
                   Import
                 </button>
                 <button 
-                  className="header-button" 
-                  onClick={exportData} 
-                  disabled={servers.length === 0}
+                  className="btn-secondary" 
+                  onClick={exportData}
                   title="Export data (Alt+E)"
                 >
                   Export
