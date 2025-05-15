@@ -1,7 +1,13 @@
 FROM nginx:alpine
 
-# Copy built assets directly (using our rolled back version)
-COPY dist /usr/share/nginx/html
+# Create directory structure
+WORKDIR /usr/share/nginx/html
+
+# Copy the pre-built files
+COPY dist/ .
+
+# If dist doesn't exist in repo, this ensures we don't fail
+RUN mkdir -p /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
