@@ -629,17 +629,17 @@ input:focus, textarea:focus {
 .color-categories.simplified {
   display: flex !important;
   flex-direction: column !important;
-  gap: 0.5rem !important;
-  margin-top: 1rem !important;
+  gap: 0.25rem !important; /* Reduced gap between categories */
+  margin-top: 0.5rem !important; /* Reduced top margin */
   width: 100% !important;
-  padding: 0.5rem 0 !important;
+  padding: 0.25rem 0 !important; /* Reduced padding */
 }
 
 .color-picker-container {
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
-  margin-bottom: 0.5rem !important;
+  margin-bottom: 0.25rem !important; /* Reduced bottom margin */
   width: 100% !important;
 }
 
@@ -659,12 +659,9 @@ input:focus, textarea:focus {
   background-color: var(--service-background) !important;
 }
 
+/* Remove horizontal spacer completely */
 .color-picker-spacer {
-  height: 0.75rem !important;
-  border-bottom: 1px solid var(--secondary-text) !important;
-  margin-bottom: 0.5rem !important;
-  margin-top: -0.25rem !important;
-  width: 100% !important;
+  display: none !important;
 }
 
 /* Color picker inputs */
@@ -693,7 +690,7 @@ input[type="color"]::-webkit-color-swatch {
 
 /* Palette actions */
 .palette-actions {
-  margin-top: 1.5rem !important;
+  margin-top: 1rem !important; /* Reduced top margin */
   display: flex !important;
   justify-content: space-between !important;
 }
