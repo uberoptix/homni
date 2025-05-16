@@ -572,7 +572,7 @@ input:focus, textarea:focus {
 .checkbox-label {
   display: flex !important;
   align-items: center !important;
-  gap: 16px !important; /* Increased from 8px */
+  gap: 16px !important; /* Increase from 8px to 16px */
   cursor: pointer !important;
 }
 
