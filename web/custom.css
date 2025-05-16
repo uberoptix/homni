@@ -564,28 +564,62 @@ input:focus, textarea:focus {
   }
 }
 
-/* Checkbox styling */
+/* Checkbox styles */
 .checkbox-group {
   margin-top: 0.5rem !important;
+  display: block !important; /* Change to block */
 }
 
 .checkbox-label {
-  display: flex !important;
-  align-items: center !important;
-  gap: 16px !important; /* Increase from 8px to 16px */
+  display: block !important;
+  position: relative !important;
+  padding-left: 30px !important; /* Changed to 30px for balanced spacing */
   cursor: pointer !important;
+  min-height: 20px !important;
+  line-height: 20px !important;
 }
 
 .checkbox-label input[type="checkbox"] {
-  width: 16px !important; /* Added explicit width */
-  height: 16px !important; /* Added explicit height */
+  position: absolute !important; /* Position absolutely */
+  left: 0 !important; /* Align to left */
+  top: 0 !important; /* Align to top */
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
   margin: 0 !important;
   cursor: pointer !important;
-  accent-color: var(--accent-button) !important;
+  border-radius: 4px !important;
+  border: 1px solid var(--accent-text) !important;
+  background-color: var(--server-background) !important;
+  transition: all 0.2s !important;
+}
+
+/* Rest of the checkbox styles remain the same */
+.checkbox-label input[type="checkbox"]:checked {
+  background-color: var(--primary-button) !important;
+  border-color: var(--primary-button) !important;
+}
+
+.checkbox-label input[type="checkbox"]:hover {
+  background-color: var(--primary-button) !important;
+  border-color: var(--primary-button) !important;
+  color: var(--primary-button-text) !important;
+}
+
+.checkbox-label input[type="checkbox"]:checked::after {
+  content: '✓' !important;
+  color: var(--primary-button-text) !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  position: absolute !important;
+  left: 3px !important;
+  top: 1px !important;
 }
 
 .checkbox-label span {
-  font-size: 0.9rem !important;
+  font-size: var(--font-size-sm) !important;
+  color: var(--server-text) !important;
 }
 
 /* ======== COLOR PALETTE DIALOG SPECIFIC STYLES ======== */
