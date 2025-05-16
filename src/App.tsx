@@ -1366,7 +1366,7 @@ function App() {
                     checked={!!newServer.notesVisible}
                     onChange={(e) => setNewServer({...newServer, notesVisible: e.target.checked})}
                   />
-                  <span>Show notes on dashboard</span>
+                  <span>&nbsp;&nbsp;Show notes on dashboard</span>
                 </label>
               </div>
               
