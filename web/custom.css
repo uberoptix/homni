@@ -572,12 +572,13 @@ input:focus, textarea:focus {
 .checkbox-label {
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: 16px !important; /* Increased from 8px */
   cursor: pointer !important;
 }
 
 .checkbox-label input[type="checkbox"] {
-  width: auto !important;
+  width: 16px !important; /* Added explicit width */
+  height: 16px !important; /* Added explicit height */
   margin: 0 !important;
   cursor: pointer !important;
   accent-color: var(--accent-button) !important;
