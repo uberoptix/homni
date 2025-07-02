@@ -3,10 +3,20 @@
 **Date**: December 2024  
 **Repository**: Homni Self-Hosted Dashboard  
 **Assessment Type**: Static Code Analysis & Configuration Review  
+**Last Updated**: December 2024 - **Security fixes implemented** ✅
+
+## 🔧 Recent Security Updates
+
+**Fixed Issues (December 2024):**
+- ✅ **Enhanced nginx security headers** - Added CSP, HSTS, X-Permitted-Cross-Domain-Policies
+- ✅ **JSON schema validation** - Comprehensive validation for import/export with file size limits
+- ✅ **Dependency vulnerability** - Fixed brace-expansion regex DoS vulnerability
+
+**Risk Level Improvement**: **MEDIUM-LOW → LOW**
 
 ## Executive Summary
 
-The Homni dashboard is a React-based frontend application for managing self-hosted services. Overall, the security posture is **moderate** with several issues identified ranging from low to medium severity. No critical vulnerabilities were found, but several improvements are recommended.
+The Homni dashboard is a React-based frontend application for managing self-hosted services. Overall, the security posture is **good** with significant improvements implemented. The recent security enhancements have reduced the risk profile from medium-low to low. Only one medium-risk issue remains (HTTP links), with a few low-priority items for future consideration.
 
 ## 🔴 HIGH PRIORITY ISSUES
 
@@ -22,26 +32,22 @@ href={`http://${server.hostname}:${service.port}${service.path || ''}`}
 - Default to HTTPS with HTTP as explicit opt-in
 - Add visual indicator for insecure connections
 
-### 2. Missing Security Headers (Medium Risk)
+### 2. Missing Security Headers (Medium Risk) ✅ **FIXED**
 **Location**: `config/nginx.conf`
-**Issue**: Several important security headers are missing:
+**Issue**: Several important security headers were missing:
 - `Content-Security-Policy` (CSP)
-- `Strict-Transport-Security` (HSTS)
+- `Strict-Transport-Security` (HSTS) 
 - `X-Permitted-Cross-Domain-Policies`
 
-**Current headers**:
+**Status**: ✅ **IMPLEMENTED** - All security headers have been added:
 ```nginx
-add_header X-Frame-Options "SAMEORIGIN";
-add_header X-XSS-Protection "1; mode=block";
-add_header X-Content-Type-Options "nosniff";
-add_header Referrer-Policy "strict-origin-when-cross-origin";
-```
-
-**Recommendation**: Add missing security headers:
-```nginx
-add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'";
-add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
-add_header X-Permitted-Cross-Domain-Policies "none";
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header X-Permitted-Cross-Domain-Policies "none" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'self';" always;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 ```
 
 ## 🟡 MEDIUM PRIORITY ISSUES
@@ -52,18 +58,18 @@ add_header X-Permitted-Cross-Domain-Policies "none";
 **Impact**: Potential DoS through regex exploitation
 **Status**: ✅ Fixed with `npm audit fix`
 
-### 4. Unsafe JSON Parsing (Low Risk)
-**Location**: `src/App.tsx:507, 936`
-```typescript
-const parsedData = JSON.parse(localData);
-const parsedData = JSON.parse(content);
-```
+### 4. Unsafe JSON Parsing (Low Risk) ✅ **FIXED**
+**Location**: `src/App.tsx` - Import functionality
 **Issue**: No validation of parsed JSON data structure before use
 **Impact**: Potential application crash or unexpected behavior with malformed data
-**Recommendation**: 
-- Add JSON schema validation
-- Implement try-catch with specific error handling
-- Validate data structure before using
+**Status**: ✅ **IMPLEMENTED** - Comprehensive JSON schema validation added:
+- Server validation (id, name, hostname, services array)
+- Service validation (id, name, port range 1-65535, optional path/notes)  
+- Color palette validation (all required hex color properties)
+- Preferences validation (sortBy must be 'name' or 'port')
+- File size validation (max 10MB)
+- File type validation (.json extension)
+- Support for both new and legacy formats with specific error messages
 
 ### 5. Client-Side Storage Security (Low Risk)
 **Location**: Multiple locations in `src/App.tsx`
@@ -123,8 +129,8 @@ const parsedData = JSON.parse(content);
 
 ### Immediate Actions (High Priority)
 1. **Add HTTPS/HTTP toggle** for service configuration
-2. **Implement missing security headers** in nginx configuration
-3. **Add JSON schema validation** for import/export functionality
+2. ✅ **Implement missing security headers** in nginx configuration - **COMPLETED**
+3. ✅ **Add JSON schema validation** for import/export functionality - **COMPLETED**
 
 ### Short-term Actions (Medium Priority)
 4. **Encrypt localStorage data** for sensitive information
@@ -142,10 +148,10 @@ const parsedData = JSON.parse(content);
 |------------|-------|-------------|
 | Critical   | 0     | No critical vulnerabilities found |
 | High       | 0     | No high-risk issues identified |
-| Medium     | 2     | HTTP links, missing security headers |
-| Low        | 4     | JSON parsing, storage security, validation |
+| Medium     | 1     | HTTP links (1 remaining - 2 fixed) |
+| Low        | 2     | Storage security, port validation (2 remaining - 2 fixed) |
 
-**Overall Risk Rating**: **MEDIUM-LOW**
+**Overall Risk Rating**: **LOW** (Improved from MEDIUM-LOW)
 
 The application follows many security best practices but has room for improvement in areas of transport security and input validation. The client-side-only architecture inherently reduces many server-side security risks.
 

@@ -923,46 +923,168 @@ function App() {
     }
   };
 
+  // JSON Schema Validation Functions
+  const validateServer = (server: any): server is Server => {
+    return (
+      typeof server === 'object' &&
+      server !== null &&
+      typeof server.id === 'string' &&
+      typeof server.name === 'string' &&
+      typeof server.hostname === 'string' &&
+      Array.isArray(server.services) &&
+      server.services.every(validateService) &&
+      (server.notes === undefined || typeof server.notes === 'string') &&
+      typeof server.notesVisible === 'boolean'
+    );
+  };
+
+  const validateService = (service: any): service is Service => {
+    return (
+      typeof service === 'object' &&
+      service !== null &&
+      typeof service.id === 'string' &&
+      typeof service.name === 'string' &&
+      typeof service.port === 'number' &&
+      service.port >= 1 &&
+      service.port <= 65535 &&
+      (service.path === undefined || typeof service.path === 'string') &&
+      (service.notes === undefined || typeof service.notes === 'string')
+    );
+  };
+
+  const validateColorPalette = (palette: any): palette is ColorPalette => {
+    const requiredKeys: (keyof ColorPalette)[] = [
+      'headerBackground', 'pageBackground', 'serverBackground', 'serviceBackground',
+      'serverText', 'serviceText', 'secondaryText', 'accentButton', 'secondaryButton',
+      'primaryButtonText', 'secondaryButtonText', 'statusRed', 'statusAmber', 'statusGreen'
+    ];
+    
+    return (
+      typeof palette === 'object' &&
+      palette !== null &&
+      requiredKeys.every(key => typeof palette[key] === 'string' && palette[key].startsWith('#'))
+    );
+  };
+
+  const validatePreferences = (preferences: any): preferences is { sortBy: SortOption } => {
+    return (
+      typeof preferences === 'object' &&
+      preferences !== null &&
+      typeof preferences.sortBy === 'string' &&
+      (preferences.sortBy === 'name' || preferences.sortBy === 'port')
+    );
+  };
+
+  const validateImportData = (data: any): { isValid: boolean; errorMessage?: string; validatedData?: any } => {
+    try {
+      // Check if it's the new format (object with servers property)
+      if (typeof data === 'object' && data !== null && 'servers' in data) {
+        // Validate new format
+        if (!Array.isArray(data.servers)) {
+          return { isValid: false, errorMessage: "Invalid format: 'servers' must be an array" };
+        }
+
+        if (!data.servers.every(validateServer)) {
+          return { isValid: false, errorMessage: "Invalid server data structure" };
+        }
+
+        if (data.colorPalette && !validateColorPalette(data.colorPalette)) {
+          return { isValid: false, errorMessage: "Invalid color palette structure" };
+        }
+
+        if (data.preferences && !validatePreferences(data.preferences)) {
+          return { isValid: false, errorMessage: "Invalid preferences structure" };
+        }
+
+        return { isValid: true, validatedData: data };
+      }
+      // Check if it's legacy format (array of servers)
+      else if (Array.isArray(data)) {
+        if (!data.every(validateServer)) {
+          return { isValid: false, errorMessage: "Invalid server data in legacy format" };
+        }
+        return { isValid: true, validatedData: data };
+      }
+      else {
+        return { isValid: false, errorMessage: "Invalid file format: Expected object with 'servers' property or array of servers" };
+      }
+    } catch (error) {
+      return { isValid: false, errorMessage: `Validation error: ${error instanceof Error ? error.message : 'Unknown error'}` };
+    }
+  };
+
   // Import data including color palette and preferences
   const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       const file = event.target.files?.[0];
       if (!file) return;
+
+      // Validate file size (max 10MB)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        alert("File too large. Maximum size is 10MB.");
+        return;
+      }
+
+      // Validate file type
+      if (!file.name.endsWith('.json')) {
+        alert("Invalid file type. Please select a JSON file.");
+        return;
+      }
       
       const reader = new FileReader();
       
       reader.onload = async (e) => {
         try {
           const content = e.target?.result as string;
-          const parsedData = JSON.parse(content);
           
-          if (Array.isArray(parsedData.servers)) {
-            await saveToIndexedDB(parsedData.servers);
-            setServers(parsedData.servers);
+          // Basic JSON parsing with size limit check
+          if (content.length > maxSize) {
+            throw new Error("File content too large");
+          }
+
+          let parsedData;
+          try {
+            parsedData = JSON.parse(content);
+          } catch (parseError) {
+            throw new Error("Invalid JSON format");
+          }
+
+          // Validate the parsed data structure
+          const validation = validateImportData(parsedData);
+          if (!validation.isValid) {
+            throw new Error(validation.errorMessage || "Invalid data structure");
+          }
+
+          const validatedData = validation.validatedData;
+
+          // Handle new format (object with servers property)
+          if (typeof validatedData === 'object' && 'servers' in validatedData) {
+            await saveToIndexedDB(validatedData.servers);
+            setServers(validatedData.servers);
             
-            if (parsedData.colorPalette) {
-              await savePaletteToIndexedDB(parsedData.colorPalette);
-              setColorPalette(parsedData.colorPalette);
-              applyColorPalette(parsedData.colorPalette);
+            if (validatedData.colorPalette) {
+              await savePaletteToIndexedDB(validatedData.colorPalette);
+              setColorPalette(validatedData.colorPalette);
+              applyColorPalette(validatedData.colorPalette);
             }
             
-            if (parsedData.preferences && parsedData.preferences.sortBy) {
-              await savePreferencesToIndexedDB({ sortBy: parsedData.preferences.sortBy });
-              setSortBy(parsedData.preferences.sortBy);
+            if (validatedData.preferences && validatedData.preferences.sortBy) {
+              await savePreferencesToIndexedDB({ sortBy: validatedData.preferences.sortBy });
+              setSortBy(validatedData.preferences.sortBy);
             }
             
             showNotification("Data imported successfully");
-          } else if (Array.isArray(parsedData)) {
-            // Legacy import (servers only)
-            await saveToIndexedDB(parsedData);
-            setServers(parsedData);
-            showNotification("Data imported successfully");
-          } else {
-            throw new Error("Invalid import format");
+          }
+          // Handle legacy format (array of servers)
+          else if (Array.isArray(validatedData)) {
+            await saveToIndexedDB(validatedData);
+            setServers(validatedData);
+            showNotification("Legacy data imported successfully");
           }
         } catch (parseError) {
           console.error("Import parsing failed", parseError);
-          alert("Import failed: Invalid file format");
+          alert(`Import failed: ${parseError instanceof Error ? parseError.message : 'Invalid file format'}`);
         }
       };
       
