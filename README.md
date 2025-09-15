@@ -1,17 +1,17 @@
 # Homni Dashboard
 
-A self-hosted monitoring dashboard for servers and services.
+A clean, privacy-first dashboard for managing servers and services.  
+
+<img src="homni.png" alt="Homni dashboard screenshot showing dark and light themes side by side" width="800"/>
 
 ## Features
 
-- Server and service monitoring
-- Status indicators (Red/Amber/Green)
-- Light and dark theme support with Evernote-inspired light theme and amber-accented dark theme
-- Customizable color palette
 - Responsive design
 - Smart search prioritizing services over servers
 - True CSS-based masonry grid layout for optimal content distribution
 - Intelligent server card ordering based on content size
+- Light and dark theme support with Evernote-inspired light theme and amber-accented dark theme
+- Customizable color palette
 
 ## Local Development
 
