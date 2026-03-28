@@ -10,7 +10,7 @@
   margin: 0 auto !important;
   column-count: 3 !important; /* Reduced from 4 to 3 columns for better distribution */
   column-gap: 20px !important; /* Increased gap between columns for better separation */
-  padding: 0 2rem !important; /* Standardized 2rem horizontal padding */
+  padding: 0 !important; /* Container already provides horizontal padding */
   box-sizing: border-box !important;
 }
 
