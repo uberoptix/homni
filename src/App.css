@@ -117,6 +117,7 @@ html {
   z-index: 10;
   width: 100%;
   box-sizing: border-box;
+  justify-content: space-between;
 }
 
 .header-logo {
@@ -355,6 +356,8 @@ kbd {
 /* Search container styling */
 .search-container {
   flex: 1;
+  display: flex;
+  justify-content: center;
   margin: 0 1.5rem;
 }
 
@@ -482,9 +485,11 @@ kbd {
   align-items: center;
   gap: 0.5rem;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .header-palette-button {
+  color: var(--accent-button);
 }
 
 .header-palette-button:hover {
@@ -1195,9 +1200,6 @@ textarea::placeholder {
 
 /* Simple server-card base styles */
 .servers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1rem;
   width: 100%;
   margin: 0;
   padding: 0;
