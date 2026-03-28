@@ -5,8 +5,8 @@
   "description": "Homni - A dashboard for managing self-hosted services",
   "type": "module",
   "scripts": {
-    "dev": "node ./disable-dev.js",
-    "build": "vite build --outDir=./web",
+    "dev": "vite",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

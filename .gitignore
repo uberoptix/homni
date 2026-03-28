@@ -6,9 +6,10 @@ node_modules/
 # Testing
 coverage/
 
-# Production
+# Production build output
 build/
 dist/
+web-test/
 
 # Development
 .env
@@ -41,9 +42,6 @@ source/dist/
 local-data/
 indexedDB/
 localStorage/
-
-# Build test output
-web-test/
 
 # Backup source files
 src/backups/
