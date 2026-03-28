@@ -1,5 +1,5 @@
 {
-  "name": "selfhosted-dashboard",
+  "name": "homni",
   "private": true,
   "version": "0.10.0",
   "description": "Homni - A dashboard for managing self-hosted services",

@@ -9,9 +9,12 @@ cd "$(dirname "$0")/.." || exit 1
 PROJECT_ROOT=$(pwd)
 echo "Working from project root: $PROJECT_ROOT"
 
-# Kill any existing server processes
+# Kill only Homni's local server process (by PID file)
 echo "Checking for existing processes..."
-pkill -f "python3 -m http.server" || true
+if [ -f "$PROJECT_ROOT/web/.homni-server.pid" ]; then
+  kill "$(cat "$PROJECT_ROOT/web/.homni-server.pid")" 2>/dev/null || true
+  rm -f "$PROJECT_ROOT/web/.homni-server.pid"
+fi
 
 # Check if web directory exists
 if [ ! -d "web" ]; then
@@ -48,4 +51,7 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
 
 # Start the server with cache-busting headers
 echo "Starting server on port 8080 with cache-busting headers..."
-cd web && python3 no_cache_server.py 
+cd web && python3 no_cache_server.py &
+echo $! > .homni-server.pid
+echo "Server started (PID: $(cat .homni-server.pid))"
+wait 

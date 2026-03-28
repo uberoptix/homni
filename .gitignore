@@ -25,6 +25,7 @@ yarn-error.log*
 # Editor
 .idea/
 .vscode/
+.claude/
 *.swp
 *.swo
 
@@ -33,10 +34,16 @@ yarn-error.log*
 Thumbs.db
 
 # Application specific - prevent personal data commits
-releases/backups/
+releases/
 BACKUP/
 *.backup
 source/dist/
 local-data/
 indexedDB/
-localStorage/ 
+localStorage/
+
+# Build test output
+web-test/
+
+# Backup source files
+src/backups/

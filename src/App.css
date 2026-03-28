@@ -80,7 +80,7 @@ html {
   max-width: 100vw;
 }
 
-.plex-app {
+.homni-app {
   min-height: 100vh;
   width: 100vw;
   max-width: 100vw;
@@ -477,13 +477,66 @@ kbd {
 }
 
 /* Header palette button styling */
-.header-palette-button {
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-left: auto;
+}
+
+.header-palette-button {
 }
 
 .header-palette-button:hover {
   color: var(--accent-text);
   background-color: transparent;
+}
+
+.header-help-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--secondary-text);
+  background: transparent;
+  color: var(--secondary-text);
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.header-help-button:hover {
+  color: var(--accent-text);
+  border-color: var(--accent-text);
+}
+
+.help-dialog {
+  max-width: 420px;
+}
+
+.help-dialog .dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.help-dialog .dialog-close {
+  background: transparent;
+  border: none;
+  color: var(--secondary-text);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+}
+
+.help-dialog .dialog-close:hover {
+  color: var(--server-text);
 }
 
 .header-palette-icon {
@@ -823,6 +876,10 @@ kbd {
   z-index: 1000;
   animation: fadeInOut 3s ease-in-out;
   border: 1px solid var(--accent-button);
+}
+
+.save-notification--error {
+  border-color: var(--status-red);
 }
 
 .save-notification span {

@@ -1275,7 +1275,7 @@ a.add-service:hover {
 /* Replaced with global transform:scale on body element */
 
 /* Make the app use full page width but center content */
-.plex-app {
+.homni-app {
   min-height: 100vh !important;
   width: 100vw !important;
   max-width: 100vw !important;
@@ -1341,7 +1341,7 @@ a.add-service:hover {
 }
 
 /* Make the app use full page width but center content */
-.plex-app {
+.homni-app {
   min-height: 100vh !important;
   width: 100vw !important;
   max-width: 100vw !important;

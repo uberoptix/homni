@@ -63,8 +63,8 @@ Homni is a web-based dashboard application designed to help users manage and acc
 
 ### 3.5 Customization
 3.5.1 Theme Selection. Users can choose between pre-defined Dark and Light themes, each represented by a visual preview button.
-3.5.2 Dark Theme. The default dark theme uses Plex-inspired colors with orange accents.
-3.5.3 Light Theme. An alternate light theme using Evernote-inspired colors with green accents.
+3.5.2 Dark Theme. The default dark theme uses warm amber accents on a dark background.
+3.5.3 Light Theme. An alternate light theme using green accents on a clean, neutral background.
 3.5.4 Custom Colors. Users can customize individual colors after selecting a base theme.
 3.5.5 Color Palette. Complete control over all color elements in the application.
 3.5.6 Theme Controls. Detailed color controls for all UI elements with direct hex value editing.
@@ -85,14 +85,14 @@ Homni is a web-based dashboard application designed to help users manage and acc
      - Amber: #F5BF4F
      - Green: #61C554
 3.5.10 Light Theme Colors:
-   - Header Background: #3b4446 (Evernote Cape Cod)
-   - Page Background: #eff2f3 (Evernote Porcelain)
-   - Server Background: #d7dcdd (Evernote Iron)
-   - Service Background: #aeb6b8 (Evernote Hit Gray)
-   - Primary Text: #3b4446 (Evernote Cape Cod)
-   - Accent Text: #2dbe60 (Evernote Green)
-   - Secondary Text: #7b868a (Evernote Rolling Stone)
-   - Button Color: #2dbe60 (Evernote Green)
+   - Header Background: #3b4446
+   - Page Background: #eff2f3
+   - Server Background: #d7dcdd
+   - Service Background: #aeb6b8
+   - Primary Text: #3b4446
+   - Accent Text: #2dbe60
+   - Secondary Text: #7b868a
+   - Button Color: #2dbe60
    - Status Colors: Same as Dark theme
 
 ### 3.6 Keyboard Shortcuts

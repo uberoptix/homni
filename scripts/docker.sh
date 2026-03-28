@@ -101,12 +101,9 @@ build_image() {
     exit 1
   fi
   
-  # Update docker-compose.yml with the specified port if needed
-  if grep -q "8088:80" config/docker-compose.yml; then
-    sed -i.bak "s/8088:80/$PORT:80/" config/docker-compose.yml
-    rm -f config/docker-compose.yml.bak
-  fi
-  
+  # Export port for docker-compose env var substitution
+  export HOMNI_PORT="$PORT"
+
   docker build -t homni:latest .
   echo "Homni Docker image built successfully."
 }
@@ -124,7 +121,7 @@ deploy_container() {
   
   # Start the container
   echo "Starting Homni container..."
-  docker compose -f config/docker-compose.yml up -d
+  HOMNI_PORT="$PORT" docker compose -f config/docker-compose.yml up -d
   
   # Check if the container started successfully
   if [ "$(docker ps -q -f name=homni-dashboard)" ]; then

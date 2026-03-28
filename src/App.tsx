@@ -69,7 +69,7 @@ const defaultPalette: ColorPalette = {
   statusGreen: '#7BB961'
 };
 
-// Light Theme with Evernote colors
+// Light Theme
 const lightPalette: ColorPalette = {
   headerBackground: '#E9FDF1', // Light mint green
   pageBackground: '#F2F2F2', // Light gray
@@ -91,7 +91,8 @@ type SortOption = 'name' | 'port';
 type StorageType = 'localStorage' | 'sessionStorage' | 'indexedDB' | 'none';
 
 // Directly use IndexedDB as primary storage
-const DB_NAME = 'selfhosted_dashboard';
+const DB_NAME = 'homni';
+const LEGACY_DB_NAME = 'selfhosted_dashboard';
 const DB_VERSION = 1;
 const STORE_NAME = 'servers_store';
 const DB_KEY = 'servers_data';
@@ -103,16 +104,16 @@ const openDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
     try {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
-      
+
       request.onerror = (event) => {
         console.error("Error opening IndexedDB", event);
         reject(new Error("Could not open IndexedDB"));
       };
-      
+
       request.onsuccess = (event) => {
         resolve((event.target as IDBOpenDBRequest).result);
       };
-      
+
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -123,6 +124,50 @@ const openDB = (): Promise<IDBDatabase> => {
       console.error("Critical error opening IndexedDB:", error);
       reject(error);
     }
+  });
+};
+
+// Migrate data from legacy DB name to new DB name
+const migrateLegacyDB = async (): Promise<void> => {
+  return new Promise((resolve) => {
+    const request = indexedDB.open(LEGACY_DB_NAME, DB_VERSION);
+    request.onerror = () => resolve();
+    request.onsuccess = async (event) => {
+      const legacyDb = (event.target as IDBOpenDBRequest).result;
+      if (!legacyDb.objectStoreNames.contains(STORE_NAME)) {
+        legacyDb.close();
+        return resolve();
+      }
+      try {
+        const tx = legacyDb.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const allRequest = store.getAll();
+        allRequest.onsuccess = async () => {
+          const records = allRequest.result;
+          legacyDb.close();
+          if (records && records.length > 0) {
+            const newDb = await openDB();
+            const writeTx = newDb.transaction(STORE_NAME, 'readwrite');
+            const writeStore = writeTx.objectStore(STORE_NAME);
+            for (const record of records) {
+              writeStore.put(record);
+            }
+            writeTx.oncomplete = () => {
+              newDb.close();
+              indexedDB.deleteDatabase(LEGACY_DB_NAME);
+              resolve();
+            };
+            writeTx.onerror = () => { newDb.close(); resolve(); };
+          } else {
+            resolve();
+          }
+        };
+        allRequest.onerror = () => { legacyDb.close(); resolve(); };
+      } catch {
+        legacyDb.close();
+        resolve();
+      }
+    };
   });
 };
 
@@ -140,7 +185,6 @@ const saveToIndexedDB = async (data: Server[]): Promise<boolean> => {
       });
       
       request.onsuccess = () => {
-        console.log("Data saved to IndexedDB successfully", data);
         resolve(true);
       };
       
@@ -172,10 +216,8 @@ const getFromIndexedDB = async (): Promise<Server[] | null> => {
       
       request.onsuccess = () => {
         if (request.result) {
-          console.log("Data retrieved from IndexedDB", request.result.data);
           resolve(request.result.data);
         } else {
-          console.log("No data found in IndexedDB");
           resolve(null);
         }
       };
@@ -210,7 +252,6 @@ const savePaletteToIndexedDB = async (palette: ColorPalette): Promise<boolean> =
       });
       
       request.onsuccess = () => {
-        console.log("Color palette saved to IndexedDB successfully", palette);
         resolve(true);
       };
       
@@ -242,10 +283,8 @@ const getPaletteFromIndexedDB = async (): Promise<ColorPalette | null> => {
       
       request.onsuccess = () => {
         if (request.result) {
-          console.log("Color palette retrieved from IndexedDB", request.result.data);
           resolve(request.result.data);
         } else {
-          console.log("No color palette found in IndexedDB");
           resolve(null);
         }
       };
@@ -280,7 +319,6 @@ const savePreferencesToIndexedDB = async (preferences: { sortBy: SortOption }): 
       });
       
       request.onsuccess = () => {
-        console.log("User preferences saved to IndexedDB successfully", preferences);
         resolve(true);
       };
       
@@ -312,10 +350,8 @@ const getPreferencesFromIndexedDB = async (): Promise<{ sortBy: SortOption } | n
       
       request.onsuccess = () => {
         if (request.result) {
-          console.log("User preferences retrieved from IndexedDB", request.result.data);
           resolve(request.result.data);
         } else {
-          console.log("No user preferences found in IndexedDB");
           resolve(null);
         }
       };
@@ -348,18 +384,18 @@ function App() {
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
   const [newService, setNewService] = useState<{ name: string; port: string; path: string; notes: string }>({ name: '', port: '', path: '', notes: '' });
   const [sortBy, setSortBy] = useState<SortOption>('name');
-  // @ts-ignore - used in fallback storage logic
-  const [storageType, setStorageType] = useState<StorageType>('indexedDB');
+  const [, setStorageType] = useState<StorageType>('indexedDB');
   const [dataLoaded, setDataLoaded] = useState(false);
-  // @ts-ignore - used in form focus handling
-  const [activeInputId, setActiveInputId] = useState<string | null>(null);
+  const [, setActiveInputId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [notification, setNotification] = useState<{show: boolean, message: string}>({
+  const [notification, setNotification] = useState<{show: boolean, message: string, isError: boolean}>({
     show: false,
-    message: ''
+    message: '',
+    isError: false
   });
   const [colorPalette, setColorPalette] = useState<ColorPalette>(defaultPalette);
   const [isPaletteDialogOpen, setIsPaletteDialogOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   
   // Refs for dialogs
   const serverDialogRef = useRef<HTMLDivElement>(null);
@@ -386,12 +422,10 @@ function App() {
     
     // If any services match, return those servers
     if (serversWithMatchingServices.length > 0) {
-      console.log("Service match found - prioritizing services");
       return serversWithMatchingServices;
     }
     
     // Second priority - If no services match, then fall back to filtering servers by name
-    console.log("No service match found - falling back to server names");
     const filteredByServerName = servers.filter(server => 
       server.name.toLowerCase().includes(lowerSearchTerm)
     );
@@ -420,7 +454,6 @@ function App() {
     
     if (anyServiceMatches) {
       // Show only services that match the search term
-      console.log("Filtering to show only matching services");
       return getSortedServices(
         services.filter(service => 
           service.name.toLowerCase().includes(lowerSearchTerm)
@@ -435,7 +468,6 @@ function App() {
     
     if (serverMatch) {
       // If filtering by server name, show all services for that server
-      console.log("Server name match - showing all services");
       return getSortedServices(services);
     }
     
@@ -469,12 +501,12 @@ function App() {
   };
 
   // Show notification
-  const showNotification = (message: string) => {
-    setNotification({ show: true, message });
-    
+  const showNotification = (message: string, isError = false) => {
+    setNotification({ show: true, message, isError });
+
     // Hide after 3 seconds
     setTimeout(() => {
-      setNotification({ show: false, message: '' });
+      setNotification({ show: false, message: '', isError: false });
     }, 3000);
   };
 
@@ -490,6 +522,9 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       try {
+        // Migrate from legacy DB name if needed
+        await migrateLegacyDB();
+
         // Get servers
         const serversData = await getFromIndexedDB();
         if (serversData) {
@@ -498,7 +533,6 @@ function App() {
             ...server,
             notesVisible: server.notesVisible === true // Explicitly check for true, defaults to false
           }));
-          console.log('Loaded servers with updated notesVisible flags:', updatedServers);
           setServers(updatedServers);
         } else {
           try {
@@ -511,10 +545,8 @@ function App() {
                 ...server,
                 notesVisible: server.notesVisible === true // Explicitly check for true, defaults to false
               }));
-              console.log('Loaded servers from localStorage with updated notesVisible flags:', updatedServers);
               setStorageType('localStorage');
               setServers(updatedServers);
-              console.log("Data loaded from localStorage");
             }
           } catch (e) {
             console.error("Error loading fallback data from localStorage", e);
@@ -534,7 +566,6 @@ function App() {
         const preferencesData = await getPreferencesFromIndexedDB();
         if (preferencesData && preferencesData.sortBy) {
           setSortBy(preferencesData.sortBy);
-          console.log("Sort preference loaded:", preferencesData.sortBy);
         }
         
         setDataLoaded(true);
@@ -551,24 +582,20 @@ function App() {
   useEffect(() => {
     // Don't save until the initial data is loaded
     if (!dataLoaded) {
-      console.log('Data not yet loaded, skipping save');
       return;
     }
     
-    console.log('Servers state changed, saving to IndexedDB:', servers);
     
     const saveData = async () => {
       try {
         const success = await saveToIndexedDB(servers);
         if (success) {
-          console.log('Successfully saved data to IndexedDB');
         } else {
           console.error('Failed to save to IndexedDB');
           
           // Try fallback to localStorage
           try {
             localStorage.setItem('dashboard_servers', JSON.stringify(servers));
-            console.log('Fallback save to localStorage successful');
           } catch (storageError) {
             console.error('Fallback save to localStorage failed:', storageError);
           }
@@ -581,13 +608,68 @@ function App() {
     saveData();
   }, [servers, dataLoaded]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+
+      if (e.altKey) {
+        switch (e.key.toLowerCase()) {
+          case 'a':
+            e.preventDefault();
+            setIsDialogOpen(true);
+            break;
+          case 'i':
+            e.preventDefault();
+            document.getElementById('import-file')?.click() ||
+              document.getElementById('welcome-import-file')?.click();
+            break;
+          case 'e':
+            e.preventDefault();
+            exportData();
+            break;
+          case 'p':
+            e.preventDefault();
+            setIsPaletteDialogOpen(true);
+            break;
+          case 's':
+            e.preventDefault();
+            (document.querySelector('.search-input') as HTMLElement)?.focus();
+            break;
+        }
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        if (isHelpOpen) { setIsHelpOpen(false); return; }
+        if (isPaletteDialogOpen) { setIsPaletteDialogOpen(false); return; }
+        if (isAddingService) { setIsAddingService(false); return; }
+        if (isDialogOpen) { setIsDialogOpen(false); return; }
+        if (searchTerm) { setSearchTerm(''); return; }
+      }
+
+      if (e.key === '/' && !isInput) {
+        e.preventDefault();
+        (document.querySelector('.search-input') as HTMLElement)?.focus();
+      }
+
+      if (e.key === '?' && !isInput) {
+        e.preventDefault();
+        setIsHelpOpen(prev => !prev);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  });
+
   const handleAddServer = () => {
     if (!newServer.name || !newServer.hostname) {
-      alert('Please enter both server name and hostname');
+      showNotification('Please enter both server name and hostname', true);
       return;
     }
 
-    console.log('Adding new server with notesVisible defaulting to false');
 
     const server: Server = {
       id: Date.now().toString(),
@@ -607,7 +689,6 @@ function App() {
     const server = servers.find((s: Server) => s.id === serverId);
     if (server) {
       // Debug checking state
-      console.log('Opening edit dialog for server:', server.id, 'notesVisible:', server.notesVisible);
       
       setNewServer({ 
         name: server.name, 
@@ -623,13 +704,12 @@ function App() {
 
   const handleEditServer = () => {
     if (!newServer.name || !newServer.hostname || !editingServerId) {
-      alert('Please enter both server name and hostname');
+      showNotification('Please enter both server name and hostname', true);
       return;
     }
 
     // Log the actual boolean value for clarity
     const notesVisibleValue = Boolean(newServer.notesVisible);
-    console.log('Saving server with notesVisible:', notesVisibleValue, '(original value:', newServer.notesVisible, ', type:', typeof newServer.notesVisible, ')');
 
     setServers(servers.map((server: Server) => {
       if (server.id === editingServerId) {
@@ -640,7 +720,6 @@ function App() {
           notes: newServer.notes,
           notesVisible: notesVisibleValue
         };
-        console.log('Updated server:', updatedServer.id, 'notesVisible set to:', updatedServer.notesVisible);
         return updatedServer;
       }
       return server;
@@ -659,31 +738,23 @@ function App() {
     }
   };
 
-  // @ts-ignore - used for toggling notes visibility
-  const toggleNotesVisibility = (serverId: string) => {
-    setServers(servers.map((server: Server) => {
-      if (server.id === serverId) {
-        const newVisibility = !server.notesVisible;
-        console.log('Toggling notes visibility for server:', server.id, 'from:', server.notesVisible, 'to:', newVisibility);
-        return {
-          ...server,
-          notesVisible: newVisibility
-        };
-      }
-      return server;
-    }));
-  };
 
   const handleAddService = () => {
     if (!newService.name || !newService.port || !currentServerId) {
-      alert('Please enter service name and port');
+      showNotification('Please enter service name and port', true);
+      return;
+    }
+
+    const portNum = parseInt(newService.port);
+    if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
+      showNotification('Port must be a number between 1 and 65535', true);
       return;
     }
 
     const service: Service = {
       id: Date.now().toString(),
       name: newService.name,
-      port: parseInt(newService.port),
+      port: portNum,
       path: newService.path || undefined,
       notes: newService.notes || undefined
     };
@@ -737,7 +808,13 @@ function App() {
 
   const handleEditService = () => {
     if (!newService.name || !newService.port || !currentServerId || !editingServiceId) {
-      alert('Please enter service name and port');
+      showNotification('Please enter service name and port', true);
+      return;
+    }
+
+    const portNum = parseInt(newService.port);
+    if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
+      showNotification('Port must be a number between 1 and 65535', true);
       return;
     }
 
@@ -750,7 +827,7 @@ function App() {
               return {
                 ...service,
                 name: newService.name,
-                port: parseInt(newService.port),
+                port: portNum,
                 path: newService.path || undefined,
                 notes: newService.notes || undefined
               };
@@ -790,11 +867,11 @@ function App() {
         setIsPaletteDialogOpen(false);
         showNotification("Default colors restored and saved");
       } else {
-        alert("Failed to save default colors");
+        showNotification("Failed to save default colors", true);
       }
     } catch (err) {
       console.error("Error resetting palette:", err);
-      alert("Error resetting to defaults");
+      showNotification("Error resetting to defaults", true);
     }
   };
 
@@ -838,11 +915,11 @@ function App() {
         setIsPaletteDialogOpen(false);
         showNotification("Color settings saved successfully");
       } else {
-        alert("Failed to save color settings");
+        showNotification("Failed to save color settings", true);
       }
     } catch (err) {
       console.error("Error saving palette:", err);
-      alert("Error saving color settings");
+      showNotification("Error saving color settings", true);
     }
   };
 
@@ -919,7 +996,7 @@ function App() {
       showNotification("Data exported successfully");
     } catch (e) {
       console.error("Export failed", e);
-      alert("Export failed");
+      showNotification("Export failed", true);
     }
   };
 
@@ -962,18 +1039,18 @@ function App() {
           }
         } catch (parseError) {
           console.error("Import parsing failed", parseError);
-          alert("Import failed: Invalid file format");
+          showNotification("Import failed: Invalid file format", true);
         }
       };
       
       reader.onerror = () => {
-        alert("Error reading file");
+        showNotification("Error reading file", true);
       };
       
       reader.readAsText(file);
     } catch (e) {
       console.error("Import failed", e);
-      alert("Import failed");
+      showNotification("Import failed", true);
     }
     
     // Reset the input
@@ -1012,7 +1089,7 @@ function App() {
   };
 
   return (
-    <div className="plex-app">
+    <div className="homni-app">
       <div className="header">
         <div className="header-logo">
           <div className="app-logo"></div>
@@ -1044,17 +1121,26 @@ function App() {
           </form>
         </div>
 
-        <button 
-          className="header-palette-button" 
-          onClick={() => setIsPaletteDialogOpen(true)}
-          title="Customize Colors (Alt+P)"
-        >
-          <div className="header-palette-icon"></div>
-        </button>
+        <div className="header-actions">
+          <button
+            className="header-palette-button"
+            onClick={() => setIsPaletteDialogOpen(true)}
+            title="Customize Colors (Alt+P)"
+          >
+            <div className="header-palette-icon"></div>
+          </button>
+          <button
+            className="header-help-button"
+            onClick={() => setIsHelpOpen(true)}
+            title="Keyboard Shortcuts (?)"
+          >
+            ?
+          </button>
+        </div>
       </div>
       
       {notification.show && (
-        <div className="save-notification">
+        <div className={`save-notification${notification.isError ? ' save-notification--error' : ''}`}>
           <span>{notification.message}</span>
         </div>
       )}
@@ -1119,59 +1205,6 @@ function App() {
                 </button>
               </div>
               
-              <div className="keyboard-shortcuts-info">
-                <h3>Keyboard Shortcuts</h3>
-                <div className="keyboard-shortcuts-grid">
-                  <div className="shortcut-item">
-                    <div className="shortcut-keys">
-                      <kbd>Alt</kbd> + <kbd>A</kbd>
-                    </div>
-                    <p className="shortcut-description">Add Server</p>
-                  </div>
-                  <div className="shortcut-item">
-                    <div className="shortcut-keys">
-                      <kbd>Alt</kbd> + <kbd>I</kbd>
-                    </div>
-                    <p className="shortcut-description">Import Data</p>
-                  </div>
-                  <div className="shortcut-item">
-                    <div className="shortcut-keys">
-                      <kbd>Alt</kbd> + <kbd>E</kbd>
-                    </div>
-                    <p className="shortcut-description">Export Data</p>
-                  </div>
-                  <div className="shortcut-item">
-                    <div className="shortcut-keys">
-                      <kbd>Alt</kbd> + <kbd>P</kbd>
-                    </div>
-                    <p className="shortcut-description">Customize Colors</p>
-                  </div>
-                  <div className="shortcut-item">
-                    <div className="shortcut-keys">
-                      <kbd>/</kbd> or <kbd>Alt</kbd> + <kbd>S</kbd>
-                    </div>
-                    <p className="shortcut-description">Focus Search</p>
-                  </div>
-                  <div className="shortcut-item">
-                    <div className="shortcut-keys">
-                      <kbd>Esc</kbd>
-                    </div>
-                    <p className="shortcut-description">Clear Search / Close Dialog</p>
-                  </div>
-                  <div className="shortcut-item">
-                    <div className="shortcut-keys">
-                      <kbd>Enter</kbd>
-                    </div>
-                    <p className="shortcut-description">Submit Form or Navigate Forms</p>
-                  </div>
-                  <div className="shortcut-item">
-                    <div className="shortcut-keys">
-                      <kbd>Tab</kbd>
-                    </div>
-                    <p className="shortcut-description">Navigate Between Fields</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         ) : (
@@ -1800,9 +1833,50 @@ function App() {
         </div>
       )}
       
+      {isHelpOpen && (
+        <div className="modal-overlay" onClick={() => setIsHelpOpen(false)}>
+          <div className="dialog help-dialog" onClick={e => e.stopPropagation()}>
+            <div className="dialog-header">
+              <h2>Keyboard Shortcuts</h2>
+              <button className="dialog-close" onClick={() => setIsHelpOpen(false)}>×</button>
+            </div>
+            <div className="keyboard-shortcuts-grid">
+              <div className="shortcut-item">
+                <div className="shortcut-keys"><kbd>Alt</kbd> + <kbd>A</kbd></div>
+                <p className="shortcut-description">Add Server</p>
+              </div>
+              <div className="shortcut-item">
+                <div className="shortcut-keys"><kbd>Alt</kbd> + <kbd>I</kbd></div>
+                <p className="shortcut-description">Import Data</p>
+              </div>
+              <div className="shortcut-item">
+                <div className="shortcut-keys"><kbd>Alt</kbd> + <kbd>E</kbd></div>
+                <p className="shortcut-description">Export Data</p>
+              </div>
+              <div className="shortcut-item">
+                <div className="shortcut-keys"><kbd>Alt</kbd> + <kbd>P</kbd></div>
+                <p className="shortcut-description">Customize Colors</p>
+              </div>
+              <div className="shortcut-item">
+                <div className="shortcut-keys"><kbd>/</kbd> or <kbd>Alt</kbd> + <kbd>S</kbd></div>
+                <p className="shortcut-description">Focus Search</p>
+              </div>
+              <div className="shortcut-item">
+                <div className="shortcut-keys"><kbd>Esc</kbd></div>
+                <p className="shortcut-description">Clear Search / Close Dialog</p>
+              </div>
+              <div className="shortcut-item">
+                <div className="shortcut-keys"><kbd>?</kbd></div>
+                <p className="shortcut-description">Show This Help</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="footer">
         <div className="footer-logo"></div>
-        <span>Homni, a passion project by James Forwood. © {new Date().getFullYear()} All Rights Reserved.</span>
+        <span>Homni © {new Date().getFullYear()} James Forwood</span>
       </div>
     </div>
   );
