@@ -1876,7 +1876,7 @@ function App() {
 
       <div className="footer">
         <div className="footer-logo"></div>
-        <span>Homni © {new Date().getFullYear()} James Forwood</span>
+        <span>Homni, a passion project by James Forwood. © {new Date().getFullYear()} All Rights Reserved.</span>
       </div>
     </div>
   );

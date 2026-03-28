@@ -124,7 +124,7 @@ html {
   display: flex;
   align-items: center;
   gap: 1rem;
-  flex: 0 0 auto;
+  flex: 1 0 0;
 }
 
 .header h1 {
@@ -355,9 +355,11 @@ kbd {
 
 /* Search container styling */
 .search-container {
-  flex: 1;
+  flex: 0 1 auto;
   display: flex;
   justify-content: center;
+  width: 100%;
+  max-width: 600px;
   margin: 0 1.5rem;
 }
 
@@ -483,18 +485,21 @@ kbd {
 .header-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.5rem;
-  margin-left: auto;
-  flex-shrink: 0;
+  flex: 1 0 0;
 }
 
 .header-palette-button {
   color: var(--accent-button);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
 
 .header-palette-button:hover {
   color: var(--accent-text);
-  background-color: transparent;
 }
 
 .header-help-button {
