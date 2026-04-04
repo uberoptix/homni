@@ -84,7 +84,7 @@
 
 /* Service items styling - align with IP address */
 .service-item {
-  padding: 0 0.75rem 0 36px !important; /* Horizontal padding only; left matches hostname indent */
+  padding: 2px 0.75rem 0 36px !important; /* Slight top padding to optically align text with cog icon */
   margin-left: 0 !important; /* Ensure no additional margin shifts alignment */
   border-radius: 4px !important;
   background-color: var(--service-background) !important;

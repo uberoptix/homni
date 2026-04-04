@@ -355,7 +355,7 @@ kbd {
 
 /* Search container styling */
 .search-container {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   display: flex;
   justify-content: center;
   width: 100%;
