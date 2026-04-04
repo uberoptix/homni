@@ -6,7 +6,7 @@
 /* Masonry grid container - TRUE MASONRY LAYOUT */
 .masonry-grid {
   width: 100% !important;
-  max-width: 1600px !important;
+  max-width: 1400px !important;
   margin: 0 auto !important;
   column-count: 3 !important; /* Reduced from 4 to 3 columns for better distribution */
   column-gap: 20px !important; /* Increased gap between columns for better separation */

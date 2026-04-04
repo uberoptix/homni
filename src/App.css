@@ -124,7 +124,7 @@ html {
   display: flex;
   align-items: center;
   gap: 1rem;
-  flex: 1 0 0;
+  flex: 0 0 auto;
 }
 
 .header h1 {
@@ -487,7 +487,7 @@ kbd {
   align-items: center;
   justify-content: flex-end;
   gap: 0.5rem;
-  flex: 1 0 0;
+  flex: 0 0 auto;
 }
 
 .header-palette-button {
