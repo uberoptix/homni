@@ -53,7 +53,7 @@
   
   /* Fixed Component Heights */
   --height-button: 38px;      /* Standard button height */
-  --height-service: 40px;     /* Service item height */
+  --height-service: 44px;     /* Service item height */
 }
 
 body {

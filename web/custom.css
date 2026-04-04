@@ -84,8 +84,7 @@
 
 /* Service items styling - align with IP address */
 .service-item {
-  padding: 0.75rem !important;
-  padding-left: 36px !important; /* Match the hostname and notes padding */
+  padding: 0 0.75rem 0 36px !important; /* Horizontal padding only; left matches hostname indent */
   margin-left: 0 !important; /* Ensure no additional margin shifts alignment */
   border-radius: 4px !important;
   background-color: var(--service-background) !important;
@@ -93,8 +92,8 @@
   justify-content: space-between !important;
   align-items: center !important;
   transition: all 0.2s !important;
-  height: 40px !important;
-  max-height: 40px !important;
+  height: 44px !important;
+  max-height: 44px !important;
   box-sizing: border-box !important;
   position: relative !important; /* For proper positioning relative to config icon */
   width: 100% !important; /* Ensure full width */
@@ -905,8 +904,8 @@ body, html {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  height: 40px !important;  /* Increase height to match buttons */
-  min-height: 40px !important;  /* Ensure consistent height */
+  height: 44px !important;
+  min-height: 44px !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
 }

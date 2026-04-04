@@ -1106,6 +1106,7 @@ function App() {
                 onChange={handleSearchChange}
                 aria-label="Search servers or services"
                 className="search-input"
+                autoFocus
               />
               {searchTerm && (
                 <button 
