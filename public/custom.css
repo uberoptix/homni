@@ -431,7 +431,7 @@ input:focus, textarea:focus {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   position: relative !important;
-  top: -3px !important;
+  top: -1.5px !important;
 }
 
 /* Small button adjustments */
