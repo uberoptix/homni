@@ -1305,7 +1305,7 @@ textarea::placeholder {
 
 .sort-button {
   background-color: var(--secondary-button);
-  color: var(--secondary-button-text);
+  color: var(--primary-button-text);
   border: none;
   padding: 0 1rem;
   height: var(--height-button);

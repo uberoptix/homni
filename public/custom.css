@@ -217,6 +217,10 @@
   background-color: color-mix(in srgb, var(--primary-button) 90%, white) !important;
 }
 
+.sort-button {
+  color: var(--primary-button-text) !important;
+}
+
 /* Tertiary Button (Add Service, small actions within cards) */
 .small-button,
 .server-actions .small-button {
@@ -426,6 +430,8 @@ input:focus, textarea:focus {
   max-width: 100% !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+  position: relative !important;
+  top: -3px !important;
 }
 
 /* Small button adjustments */

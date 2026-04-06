@@ -710,6 +710,7 @@ function App() {
         if (isDialogOpen) { setIsDialogOpen(false); return; }
         if (selectedServiceId) {
           setSelectedServiceId(null);
+          setSearchTerm('');
           (document.querySelector('.search-input') as HTMLElement)?.focus();
           return;
         }
@@ -1296,7 +1297,7 @@ function App() {
         {(searchTerm && getFilteredServers().length === 0) && (
           <div className="search-status">
             <p>No results found for "{searchTerm}"</p>
-            <button className="text-button" onClick={clearSearch}>Clear search</button>
+            <button className="text-button" onClick={clearSearch}>Clear search (Esc)</button>
           </div>
         )}
         
@@ -1311,7 +1312,7 @@ function App() {
             ) : (
               <p>Showing servers matching "{searchTerm}"</p>
             )}
-            <button className="text-button" onClick={clearSearch}>Clear search</button>
+            <button className="text-button" onClick={clearSearch}>Clear search (Esc)</button>
           </div>
         )}
         
