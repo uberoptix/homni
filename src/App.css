@@ -110,7 +110,7 @@ html {
   background-color: var(--header-background);
   padding: 1rem 2rem;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr minmax(0, 1440px) 1fr;
   align-items: center;
   gap: 1.5rem;
   position: sticky;
@@ -357,7 +357,7 @@ kbd {
   display: flex;
   justify-content: center;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1440px;
 }
 
 .search-bar {

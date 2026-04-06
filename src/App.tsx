@@ -708,7 +708,11 @@ function App() {
         if (isPaletteDialogOpen) { setIsPaletteDialogOpen(false); return; }
         if (isAddingService) { setIsAddingService(false); return; }
         if (isDialogOpen) { setIsDialogOpen(false); return; }
-        if (selectedServiceId) { setSelectedServiceId(null); return; }
+        if (selectedServiceId) {
+          setSelectedServiceId(null);
+          (document.querySelector('.search-input') as HTMLElement)?.focus();
+          return;
+        }
         if (searchTerm) { setSearchTerm(''); return; }
       }
 
