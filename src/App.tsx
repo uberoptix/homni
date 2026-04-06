@@ -78,8 +78,8 @@ const demonHunterPalette: ColorPalette = {
   serverText: '#F0E6FF',         // Pale lavender white
   serviceText: '#CB70CB',        // Pink
   secondaryText: '#9B7EC8',      // Muted violet
-  accentButton: '#5D2CA5',       // Purple
-  secondaryButton: '#3D1870',    // Deep purple
+  accentButton: '#4CDCFF',       // Blue (logo + accent buttons)
+  secondaryButton: '#5D2CA5',    // Purple
   primaryButtonText: '#FFFFFF',  // White
   secondaryButtonText: '#F0E6FF',// Lavender white
   statusRed: '#F30B08',          // Red
