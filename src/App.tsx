@@ -793,8 +793,8 @@ function App() {
         return;
       }
 
-      // Any printable key while a service is selected: refocus search bar
-      if (selectedServiceId && !isInput && !e.altKey && !e.ctrlKey && !e.metaKey && e.key.length === 1) {
+      // Any printable key outside an input: refocus search bar
+      if (!isInput && !e.altKey && !e.ctrlKey && !e.metaKey && e.key.length === 1) {
         setSelectedServiceId(null);
         const searchInput = document.querySelector('.search-input') as HTMLInputElement;
         if (searchInput) {
