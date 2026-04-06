@@ -1283,6 +1283,11 @@ textarea::placeholder {
   height: var(--height-service);
 }
 
+.service-selected {
+  border: 2px solid var(--status-amber);
+  padding: 0 calc(1rem - 2px);
+}
+
 .service-content {
   display: flex;
   align-items: center;

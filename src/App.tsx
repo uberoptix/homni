@@ -388,6 +388,7 @@ function App() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [, setActiveInputId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [notification, setNotification] = useState<{show: boolean, message: string, isError: boolean}>({
     show: false,
     message: '',
@@ -498,6 +499,19 @@ function App() {
     return { service, server, url };
   };
 
+  // Build flat ordered list of all currently visible services (server by server, sorted within each)
+  const getVisibleServices = () => {
+    const result: { service: Service; server: Server }[] = [];
+    const filteredServers = getFilteredServers();
+    for (const server of filteredServers) {
+      const services = getSortedServices(getFilteredServices(server.services));
+      for (const service of services) {
+        result.push({ service, server });
+      }
+    }
+    return result;
+  };
+
   // Clear search
   const clearSearch = () => {
     setSearchTerm('');
@@ -506,6 +520,7 @@ function App() {
   // Handle search input changes
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+    setSelectedServiceId(null);
   };
 
   // Handle search form submission
@@ -673,6 +688,7 @@ function App() {
         if (isPaletteDialogOpen) { setIsPaletteDialogOpen(false); return; }
         if (isAddingService) { setIsAddingService(false); return; }
         if (isDialogOpen) { setIsDialogOpen(false); return; }
+        if (selectedServiceId) { setSelectedServiceId(null); return; }
         if (searchTerm) { setSearchTerm(''); return; }
       }
 
@@ -684,6 +700,60 @@ function App() {
       if (e.key === '?' && !isInput) {
         e.preventDefault();
         setIsHelpOpen(prev => !prev);
+      }
+
+      // Tab navigation through services
+      if (e.key === 'Tab' && !isDialogOpen && !isAddingService && !isPaletteDialogOpen && !isHelpOpen) {
+        e.preventDefault();
+        const visible = getVisibleServices();
+        if (visible.length === 0) return;
+
+        const currentIdx = selectedServiceId
+          ? visible.findIndex(v => v.service.id === selectedServiceId)
+          : -1;
+
+        if (e.shiftKey) {
+          // Shift+Tab: move backward
+          if (currentIdx <= 0) {
+            // At first service or nothing selected: deselect and focus search
+            setSelectedServiceId(null);
+            (document.querySelector('.search-input') as HTMLElement)?.focus();
+          } else {
+            setSelectedServiceId(visible[currentIdx - 1].service.id);
+          }
+        } else {
+          // Tab: move forward
+          const nextIdx = currentIdx + 1;
+          if (nextIdx >= visible.length) {
+            // Past last service: wrap to first
+            setSelectedServiceId(visible[0].service.id);
+          } else {
+            setSelectedServiceId(visible[nextIdx].service.id);
+          }
+        }
+        return;
+      }
+
+      // Enter on selected service: navigate
+      if (e.key === 'Enter' && selectedServiceId && !isInput && !isDialogOpen && !isAddingService) {
+        e.preventDefault();
+        const visible = getVisibleServices();
+        const match = visible.find(v => v.service.id === selectedServiceId);
+        if (match) {
+          const url = `http://${match.server.hostname}:${match.service.port}${match.service.path || ''}`;
+          window.open(url, '_blank', 'noopener,noreferrer');
+        }
+        return;
+      }
+
+      // Any printable key while a service is selected: refocus search bar
+      if (selectedServiceId && !isInput && !e.altKey && !e.ctrlKey && !e.metaKey && e.key.length === 1) {
+        setSelectedServiceId(null);
+        const searchInput = document.querySelector('.search-input') as HTMLInputElement;
+        if (searchInput) {
+          searchInput.focus();
+          // Don't preventDefault — let the keystroke flow into the input
+        }
       }
     };
 
@@ -1360,7 +1430,7 @@ function App() {
                             className="service-link"
                             title={`Open ${service.name} (Port ${service.port})`}
                           >
-                            <div className="service-item">
+                            <div className={`service-item${selectedServiceId === service.id ? ' service-selected' : ''}`}>
                               <span className="service-name">{service.name}</span>
                               <div className="service-port-container">
                                 <span className="service-port">:{service.port}</span>
