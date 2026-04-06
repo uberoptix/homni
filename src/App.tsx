@@ -585,7 +585,7 @@ function App() {
   // Apply a theme palette
   const applyTheme = (theme: 'dark' | 'light' | 'demonHunter') => {
     const palettes = { dark: defaultPalette, light: lightPalette, demonHunter: demonHunterPalette };
-    const names = { dark: 'Dark', light: 'Light', demonHunter: 'Demon Hunter' };
+    const names = { dark: 'Cinema', light: 'Pachyderm', demonHunter: 'Hunter' };
     const palette = palettes[theme];
     setColorPalette(palette);
     applyColorPalette(palette);
@@ -1731,7 +1731,7 @@ function App() {
               <button 
                 className="theme-button dark-theme-button" 
                 onClick={() => applyTheme('dark')}
-                title="Dark Theme"
+                title="Cinema"
               >
                 <div className="theme-preview dark-theme-preview">
                   <div className="theme-header"></div>
@@ -1740,13 +1740,13 @@ function App() {
                     <div className="theme-secondary"></div>
                   </div>
                 </div>
-                <span>Dark Theme</span>
+                <span>Cinema</span>
               </button>
               
               <button
                 className="theme-button light-theme-button"
                 onClick={() => applyTheme('light')}
-                title="Light Theme"
+                title="Pachyderm"
               >
                 <div className="theme-preview light-theme-preview">
                   <div className="theme-header"></div>
@@ -1755,13 +1755,13 @@ function App() {
                     <div className="theme-secondary"></div>
                   </div>
                 </div>
-                <span>Light Theme</span>
+                <span>Pachyderm</span>
               </button>
 
               <button
                 className="theme-button demon-theme-button"
                 onClick={() => applyTheme('demonHunter')}
-                title="Demon Hunter Theme"
+                title="Hunter"
               >
                 <div className="theme-preview demon-theme-preview">
                   <div className="theme-header"></div>
@@ -1770,7 +1770,7 @@ function App() {
                     <div className="theme-secondary"></div>
                   </div>
                 </div>
-                <span>Demon Hunter</span>
+                <span>Hunter</span>
               </button>
             </div>
             
