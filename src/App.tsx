@@ -69,6 +69,24 @@ const defaultPalette: ColorPalette = {
   statusGreen: '#7BB961'
 };
 
+// Kpop Demon Hunters Theme
+const demonHunterPalette: ColorPalette = {
+  headerBackground: '#0D0015',   // Deep void purple-black
+  pageBackground: '#120820',     // Dark purple-black
+  serverBackground: '#1A0A2E',   // Midnight purple
+  serviceBackground: '#221238',  // Dark plum
+  serverText: '#F0E6FF',         // Pale lavender white
+  serviceText: '#FF2D95',        // Hot pink (idol energy)
+  secondaryText: '#9B7EC8',      // Muted violet
+  accentButton: '#FF2D95',       // Hot pink accent
+  secondaryButton: '#3D2066',    // Deep purple
+  primaryButtonText: '#FFFFFF',  // White
+  secondaryButtonText: '#F0E6FF',// Lavender white
+  statusRed: '#FF3366',          // Neon red-pink
+  statusAmber: '#C77DFF',        // Electric violet (replaces gold)
+  statusGreen: '#00FFAB',        // Neon mint green
+};
+
 // Light Theme
 const lightPalette: ColorPalette = {
   headerBackground: '#E9FDF1', // Light mint green
@@ -565,11 +583,13 @@ function App() {
   };
 
   // Apply a theme palette
-  const applyTheme = (theme: 'dark' | 'light') => {
-    const palette = theme === 'dark' ? defaultPalette : lightPalette;
+  const applyTheme = (theme: 'dark' | 'light' | 'demonHunter') => {
+    const palettes = { dark: defaultPalette, light: lightPalette, demonHunter: demonHunterPalette };
+    const names = { dark: 'Dark', light: 'Light', demonHunter: 'Demon Hunter' };
+    const palette = palettes[theme];
     setColorPalette(palette);
     applyColorPalette(palette);
-    showNotification(`${theme === 'dark' ? 'Dark' : 'Light'} theme applied`);
+    showNotification(`${names[theme]} theme applied`);
   };
 
   // Load data and color palette on component mount
@@ -1723,8 +1743,8 @@ function App() {
                 <span>Dark Theme</span>
               </button>
               
-              <button 
-                className="theme-button light-theme-button" 
+              <button
+                className="theme-button light-theme-button"
                 onClick={() => applyTheme('light')}
                 title="Light Theme"
               >
@@ -1736,6 +1756,21 @@ function App() {
                   </div>
                 </div>
                 <span>Light Theme</span>
+              </button>
+
+              <button
+                className="theme-button demon-theme-button"
+                onClick={() => applyTheme('demonHunter')}
+                title="Demon Hunter Theme"
+              >
+                <div className="theme-preview demon-theme-preview">
+                  <div className="theme-header"></div>
+                  <div className="theme-server">
+                    <div className="theme-accent"></div>
+                    <div className="theme-secondary"></div>
+                  </div>
+                </div>
+                <span>Demon Hunter</span>
               </button>
             </div>
             

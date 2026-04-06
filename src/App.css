@@ -754,6 +754,45 @@ kbd {
   border: none;
 }
 
+/* Demon Hunter theme preview */
+.demon-theme-preview {
+  background-color: #120820;
+}
+
+.demon-theme-preview .theme-header {
+  height: 20px;
+  background-color: #0D0015;
+}
+
+.demon-theme-preview .theme-server {
+  height: 40px;
+  background-color: #1A0A2E;
+  margin: 10px;
+  position: relative;
+}
+
+.demon-theme-preview .theme-accent {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 24px;
+  height: 24px;
+  background-color: #FF2D95;
+  border-radius: 2px;
+  border: none;
+}
+
+.demon-theme-preview .theme-secondary {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  width: 8px;
+  height: 24px;
+  background-color: #C77DFF;
+  border-radius: 2px;
+  border: none;
+}
+
 /* Adjust the color categories to reduce spacing */
 .color-categories {
   display: grid;
