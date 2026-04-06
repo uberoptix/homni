@@ -80,7 +80,7 @@ const demonHunterPalette: ColorPalette = {
   secondaryText: '#9B7EC8',      // Muted violet
   accentButton: '#4CDCFF',       // Blue (logo + accent buttons)
   secondaryButton: '#5D2CA5',    // Purple
-  primaryButtonText: '#FFFFFF',  // White
+  primaryButtonText: '#000000',  // Black
   secondaryButtonText: '#F0E6FF',// Lavender white
   statusRed: '#F30B08',          // Red
   statusAmber: '#FEA330',        // Gold
