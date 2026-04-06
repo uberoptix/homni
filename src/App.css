@@ -436,7 +436,7 @@ kbd {
 }
 
 .search-autocomplete-server {
-  color: color-mix(in srgb, var(--status-amber) 45%, transparent);
+  color: color-mix(in srgb, var(--accent-text) 50%, transparent);
 }
 
 .search-status {
