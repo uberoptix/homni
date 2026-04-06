@@ -130,7 +130,7 @@ html {
   margin: 0;
   font-size: var(--font-size-lg);
   font-weight: 500;
-  color: var(--server-text);
+  color: #FFFFFF;
 }
 
 .add-button {
@@ -515,7 +515,7 @@ kbd {
 }
 
 .header-palette-button {
-  color: var(--accent-button);
+  color: #FFFFFF;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -530,9 +530,9 @@ kbd {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1px solid var(--secondary-text);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   background: transparent;
-  color: var(--secondary-text);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
@@ -717,12 +717,12 @@ kbd {
 
 /* Light theme preview */
 .light-theme-preview {
-  background-color: #F2F2F2;
+  background-color: #EFF2F3;
 }
 
 .light-theme-preview .theme-header {
   height: 20px;
-  background-color: #E9FDF1;
+  background-color: #166A8F;
 }
 
 .light-theme-preview .theme-server {
@@ -738,7 +738,7 @@ kbd {
   top: 8px;
   width: 24px;
   height: 24px;
-  background-color: #2DBE60;
+  background-color: #2FACB2;
   border-radius: 3px;
   border: none;
 }

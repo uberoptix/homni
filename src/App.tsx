@@ -87,22 +87,22 @@ const demonHunterPalette: ColorPalette = {
   statusGreen: '#7BB961',        // Green
 };
 
-// Light Theme
+// Pachyderm Theme (Evernote-inspired)
 const lightPalette: ColorPalette = {
-  headerBackground: '#E9FDF1', // Light mint green
-  pageBackground: '#F2F2F2', // Light gray
+  headerBackground: '#166A8F', // Deep teal (Evernote blue)
+  pageBackground: '#EFF2F3',   // Warm light gray
   serverBackground: '#FFFFFF', // White
-  serviceBackground: '#C9CFD1', // Light grayish
-  serverText: '#2C3E50', // Dark blue-gray
-  serviceText: '#00a82d', // Updated from #2DBE60 to #00a82d
-  secondaryText: '#7D7D7D', // Medium gray
-  accentButton: '#00a82d', // Updated from #2DBE60 to #00a82d
-  secondaryButton: '#C9CFD1', // Light grayish
-  primaryButtonText: '#FFFFFF', // White text for primary buttons
-  secondaryButtonText: '#2C3E50', // Dark text for secondary buttons
-  statusRed: '#EC6141', // Same as dark theme
-  statusAmber: '#DBA33A', // Same as dark theme
-  statusGreen: '#7BB961'  // Same as dark theme
+  serviceBackground: '#D7DCDD',// Evernote light gray
+  serverText: '#3B4445',       // Evernote dark
+  serviceText: '#2DBE60',      // Evernote green
+  secondaryText: '#7B868A',    // Evernote medium gray
+  accentButton: '#2FACB2',     // Teal accent
+  secondaryButton: '#AEB6B8',  // Medium-light gray
+  primaryButtonText: '#FFFFFF', // White
+  secondaryButtonText: '#3B4445',// Dark text
+  statusRed: '#EC6141',
+  statusAmber: '#DBA33A',
+  statusGreen: '#2DBE60',      // Evernote green
 };
 
 type SortOption = 'name' | 'port';
