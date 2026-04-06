@@ -76,15 +76,15 @@ const demonHunterPalette: ColorPalette = {
   serverBackground: '#1E0D3A',   // Midnight purple
   serviceBackground: '#2A1548',  // Dark plum
   serverText: '#F0E6FF',         // Pale lavender white
-  serviceText: '#CB70CB',        // Pink
-  secondaryText: '#9B7EC8',      // Muted violet
+  serviceText: '#4CDCFF',        // Blue (accent text)
+  secondaryText: '#CB70CB',      // Pink
   accentButton: '#4CDCFF',       // Blue (logo + accent buttons)
   secondaryButton: '#5D2CA5',    // Purple
   primaryButtonText: '#000000',  // Black
   secondaryButtonText: '#F0E6FF',// Lavender white
   statusRed: '#F30B08',          // Red
   statusAmber: '#FEA330',        // Gold
-  statusGreen: '#4CDCFF',        // Blue
+  statusGreen: '#7BB961',        // Green
 };
 
 // Light Theme
