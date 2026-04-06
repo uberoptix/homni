@@ -475,6 +475,31 @@ function App() {
     return [];
   };
 
+  // Compute autocomplete match: exactly one service matches across all servers
+  const getAutocompleteMatch = () => {
+    const trimmed = searchTerm.trim();
+    if (!trimmed) return null;
+
+    const lowerSearch = trimmed.toLowerCase();
+    const matches: { service: Service; server: Server }[] = [];
+
+    for (const server of servers) {
+      for (const service of server.services) {
+        if (service.name.toLowerCase().includes(lowerSearch)) {
+          matches.push({ service, server });
+        }
+      }
+    }
+
+    if (matches.length !== 1) return null;
+
+    const { service, server } = matches[0];
+    const url = `http://${server.hostname}:${service.port}${service.path || ''}`;
+    const displayText = `${service.name} — ${server.name}:${service.port}`;
+
+    return { service, server, url, displayText };
+  };
+
   // Clear search
   const clearSearch = () => {
     setSearchTerm('');
@@ -488,7 +513,11 @@ function App() {
   // Handle search form submission
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Just prevent default form submission, filtering happens as you type
+    const match = getAutocompleteMatch();
+    if (match) {
+      window.open(match.url, '_blank', 'noopener,noreferrer');
+      setSearchTerm('');
+    }
   };
 
   // Handle form-group active state
@@ -1108,6 +1137,25 @@ function App() {
                 className="search-input"
                 autoFocus
               />
+              {(() => {
+                const match = getAutocompleteMatch();
+                if (!match) return null;
+                const lowerSearch = searchTerm.toLowerCase();
+                const nameIdx = match.service.name.toLowerCase().indexOf(lowerSearch);
+                if (nameIdx === -1) return null;
+                const beforeMatch = match.service.name.slice(0, nameIdx);
+                const typedPortion = match.service.name.slice(nameIdx, nameIdx + searchTerm.length);
+                const afterMatch = match.service.name.slice(nameIdx + searchTerm.length);
+                const spacer = beforeMatch + typedPortion;
+                return (
+                  <div className="search-autocomplete-overlay" aria-hidden="true">
+                    <span className="search-autocomplete-spacer">{spacer}</span>
+                    <span className="search-autocomplete-ghost">{afterMatch}</span>
+                    <span className="search-autocomplete-ghost"> — </span>
+                    <span className="search-autocomplete-server">{match.server.name}:{match.service.port}</span>
+                  </div>
+                );
+              })()}
               {searchTerm && (
                 <button 
                   type="button" 
