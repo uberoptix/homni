@@ -650,6 +650,14 @@ function App() {
     saveData();
   }, [servers, dataLoaded]);
 
+  // Scroll selected service into view
+  useEffect(() => {
+    if (selectedServiceId) {
+      const el = document.querySelector('.service-selected');
+      if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [selectedServiceId]);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
