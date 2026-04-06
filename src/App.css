@@ -1068,29 +1068,29 @@ input[type="color"]::-webkit-color-swatch {
   /* Any non-server-card related styles can stay */
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   /* Keep header and UI element styling, remove grid-related styles */
   
   .header {
-    display: flex;
-    flex-wrap: wrap;
+    grid-template-columns: 1fr 1fr;
     padding: 1rem 2rem;
-    gap: 1rem;
+    gap: 0.75rem 1rem;
   }
-  
+
   .header-logo {
-    order: 1;
-    flex-basis: auto;
+    grid-column: 1;
+    grid-row: 1;
   }
-  
+
+  .header-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
   .search-container {
-    order: 2;
-    flex: 1 1 auto;
-    margin: 0;
-  }
-  
-  .header-palette-button {
-    order: 3;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    max-width: 100%;
   }
   
   .section-title {
@@ -1103,15 +1103,8 @@ input[type="color"]::-webkit-color-swatch {
   }
   
   .section-header {
-    flex-direction: column;
-    align-items: flex-start;
     padding: 1rem 0;
     margin-bottom: 1rem;
-  }
-  
-  .sorting-options {
-    margin-top: 1rem;
-    width: 100%;
   }
 }
 
@@ -1281,8 +1274,9 @@ textarea::placeholder {
 }
 
 .service-selected {
-  border: 2px solid var(--status-amber);
-  padding: 0 calc(1rem - 2px);
+  outline: 2px solid var(--status-amber);
+  outline-offset: -2px;
+  border-radius: 4px;
 }
 
 .service-content {

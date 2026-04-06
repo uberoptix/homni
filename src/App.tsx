@@ -476,7 +476,9 @@ function App() {
     return [];
   };
 
-  // Compute autocomplete match: exactly one service matches across all servers
+  // Compute autocomplete match for the search bar ghost text
+  // Single match: "ServiceName — server:port"
+  // Multiple matches with same name: "ServiceName — Various (tab to cycle)"
   const getAutocompleteMatch = () => {
     const trimmed = searchTerm.trim();
     if (!trimmed) return null;
@@ -492,11 +494,21 @@ function App() {
       }
     }
 
-    if (matches.length !== 1) return null;
+    if (matches.length === 0) return null;
 
-    const { service, server } = matches[0];
-    const url = `http://${server.hostname}:${service.port}${service.path || ''}`;
-    return { service, server, url };
+    if (matches.length === 1) {
+      const { service, server } = matches[0];
+      const url = `http://${server.hostname}:${service.port}${service.path || ''}`;
+      return { service, server, url, isVarious: false as const };
+    }
+
+    // Multiple matches — check if all share the same service name
+    const firstName = matches[0].service.name.toLowerCase();
+    const allSameName = matches.every(m => m.service.name.toLowerCase() === firstName);
+    if (!allSameName) return null;
+
+    // All same name, show "Various" autocomplete
+    return { service: matches[0].service, server: null, url: null, isVarious: true as const };
   };
 
   // Build flat ordered list of all currently visible services (server by server, sorted within each)
@@ -527,7 +539,7 @@ function App() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const match = getAutocompleteMatch();
-    if (match) {
+    if (match && match.url) {
       window.open(match.url, '_blank', 'noopener,noreferrer');
       setSearchTerm('');
     }
@@ -728,6 +740,7 @@ function App() {
             (document.querySelector('.search-input') as HTMLElement)?.focus();
           } else {
             setSelectedServiceId(visible[currentIdx - 1].service.id);
+            (document.querySelector('.search-input') as HTMLElement)?.blur();
           }
         } else {
           // Tab: move forward
@@ -738,6 +751,7 @@ function App() {
           } else {
             setSelectedServiceId(visible[nextIdx].service.id);
           }
+          (document.querySelector('.search-input') as HTMLElement)?.blur();
         }
         return;
       }
@@ -1224,12 +1238,15 @@ function App() {
                 const typedPortion = autocompleteMatch.service.name.slice(nameIdx, nameIdx + searchTerm.length);
                 const afterMatch = autocompleteMatch.service.name.slice(nameIdx + searchTerm.length);
                 const spacer = beforeMatch + typedPortion;
+                const serverText = autocompleteMatch.isVarious
+                  ? 'Various (tab to cycle)'
+                  : `${autocompleteMatch.server!.name}:${autocompleteMatch.service.port}`;
                 return (
                   <div className="search-autocomplete-overlay" aria-hidden="true">
                     <span className="search-autocomplete-spacer">{spacer}</span>
                     <span className="search-autocomplete-ghost">{afterMatch}</span>
                     <span className="search-autocomplete-ghost"> — </span>
-                    <span className="search-autocomplete-server">{autocompleteMatch.server.name}:{autocompleteMatch.service.port}</span>
+                    <span className="search-autocomplete-server">{serverText}</span>
                   </div>
                 );
               })()}

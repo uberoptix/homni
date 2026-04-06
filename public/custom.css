@@ -875,9 +875,8 @@ body, html {
 }
 
 .search-container {
-  flex-grow: 1;
   max-width: 1200px;
-  margin: 0 1rem !important; /* Standardized 1rem spacing */
+  width: 100%;
 }
 
 /* Updated status colors matching the specified hex codes */
