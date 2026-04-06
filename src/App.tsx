@@ -89,14 +89,14 @@ const demonHunterPalette: ColorPalette = {
 
 // Pachyderm Theme (Evernote-inspired)
 const lightPalette: ColorPalette = {
-  headerBackground: '#166A8F', // Deep teal (Evernote blue)
+  headerBackground: '#2DBE60', // Evernote green
   pageBackground: '#EFF2F3',   // Warm light gray
   serverBackground: '#FFFFFF', // White
   serviceBackground: '#D7DCDD',// Evernote light gray
   serverText: '#3B4445',       // Evernote dark
-  serviceText: '#2DBE60',      // Evernote green
+  serviceText: '#166A8F',      // Deep teal (accent text)
   secondaryText: '#7B868A',    // Evernote medium gray
-  accentButton: '#2FACB2',     // Teal accent
+  accentButton: '#2DBE60',     // Evernote green
   secondaryButton: '#AEB6B8',  // Medium-light gray
   primaryButtonText: '#FFFFFF', // White
   secondaryButtonText: '#3B4445',// Dark text

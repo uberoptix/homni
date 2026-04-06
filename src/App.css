@@ -722,7 +722,7 @@ kbd {
 
 .light-theme-preview .theme-header {
   height: 20px;
-  background-color: #166A8F;
+  background-color: #2DBE60;
 }
 
 .light-theme-preview .theme-server {
@@ -738,7 +738,7 @@ kbd {
   top: 8px;
   width: 24px;
   height: 24px;
-  background-color: #2FACB2;
+  background-color: #166A8F;
   border-radius: 3px;
   border: none;
 }
@@ -1344,7 +1344,7 @@ textarea::placeholder {
 
 .sort-button {
   background-color: var(--secondary-button);
-  color: var(--primary-button-text);
+  color: var(--secondary-button-text);
   border: none;
   padding: 0 1rem;
   height: var(--height-button);
