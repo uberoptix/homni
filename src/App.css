@@ -756,17 +756,17 @@ kbd {
 
 /* Demon Hunter theme preview */
 .demon-theme-preview {
-  background-color: #120820;
+  background-color: #120620;
 }
 
 .demon-theme-preview .theme-header {
   height: 20px;
-  background-color: #0D0015;
+  background-color: #1A0936;
 }
 
 .demon-theme-preview .theme-server {
   height: 40px;
-  background-color: #1A0A2E;
+  background-color: #1E0D3A;
   margin: 10px;
   position: relative;
 }
@@ -777,7 +777,7 @@ kbd {
   top: 8px;
   width: 24px;
   height: 24px;
-  background-color: #FF2D95;
+  background-color: #5D2CA5;
   border-radius: 2px;
   border: none;
 }
@@ -788,7 +788,7 @@ kbd {
   top: 8px;
   width: 8px;
   height: 24px;
-  background-color: #C77DFF;
+  background-color: #CB70CB;
   border-radius: 2px;
   border: none;
 }

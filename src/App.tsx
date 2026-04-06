@@ -71,20 +71,20 @@ const defaultPalette: ColorPalette = {
 
 // Kpop Demon Hunters Theme
 const demonHunterPalette: ColorPalette = {
-  headerBackground: '#0D0015',   // Deep void purple-black
-  pageBackground: '#120820',     // Dark purple-black
-  serverBackground: '#1A0A2E',   // Midnight purple
-  serviceBackground: '#221238',  // Dark plum
+  headerBackground: '#1A0936',   // Deep purple-black
+  pageBackground: '#120620',     // Dark void
+  serverBackground: '#1E0D3A',   // Midnight purple
+  serviceBackground: '#2A1548',  // Dark plum
   serverText: '#F0E6FF',         // Pale lavender white
-  serviceText: '#FF2D95',        // Hot pink (idol energy)
+  serviceText: '#CB70CB',        // Pink
   secondaryText: '#9B7EC8',      // Muted violet
-  accentButton: '#FF2D95',       // Hot pink accent
-  secondaryButton: '#3D2066',    // Deep purple
+  accentButton: '#5D2CA5',       // Purple
+  secondaryButton: '#3D1870',    // Deep purple
   primaryButtonText: '#FFFFFF',  // White
   secondaryButtonText: '#F0E6FF',// Lavender white
-  statusRed: '#FF3366',          // Neon red-pink
-  statusAmber: '#C77DFF',        // Electric violet (replaces gold)
-  statusGreen: '#00FFAB',        // Neon mint green
+  statusRed: '#F30B08',          // Red
+  statusAmber: '#FEA330',        // Gold
+  statusGreen: '#4CDCFF',        // Blue
 };
 
 // Light Theme
