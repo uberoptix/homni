@@ -414,6 +414,34 @@ kbd {
   background-color: var(--hover-palette-button);
 }
 
+.search-autocomplete-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--height-button);
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.search-autocomplete-spacer {
+  visibility: hidden;
+}
+
+.search-autocomplete-ghost {
+  color: color-mix(in srgb, var(--server-text) 40%, transparent);
+}
+
+.search-autocomplete-server {
+  color: color-mix(in srgb, var(--status-amber) 45%, transparent);
+}
+
 .search-status {
   margin-bottom: 1.5rem;
   padding: 0.75rem 1rem;

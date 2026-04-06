@@ -495,9 +495,7 @@ function App() {
 
     const { service, server } = matches[0];
     const url = `http://${server.hostname}:${service.port}${service.path || ''}`;
-    const displayText = `${service.name} — ${server.name}:${service.port}`;
-
-    return { service, server, url, displayText };
+    return { service, server, url };
   };
 
   // Clear search
@@ -1117,6 +1115,8 @@ function App() {
     });
   };
 
+  const autocompleteMatch = getAutocompleteMatch();
+
   return (
     <div className="homni-app">
       <div className="header">
@@ -1138,21 +1138,20 @@ function App() {
                 autoFocus
               />
               {(() => {
-                const match = getAutocompleteMatch();
-                if (!match) return null;
+                if (!autocompleteMatch) return null;
                 const lowerSearch = searchTerm.toLowerCase();
-                const nameIdx = match.service.name.toLowerCase().indexOf(lowerSearch);
+                const nameIdx = autocompleteMatch.service.name.toLowerCase().indexOf(lowerSearch);
                 if (nameIdx === -1) return null;
-                const beforeMatch = match.service.name.slice(0, nameIdx);
-                const typedPortion = match.service.name.slice(nameIdx, nameIdx + searchTerm.length);
-                const afterMatch = match.service.name.slice(nameIdx + searchTerm.length);
+                const beforeMatch = autocompleteMatch.service.name.slice(0, nameIdx);
+                const typedPortion = autocompleteMatch.service.name.slice(nameIdx, nameIdx + searchTerm.length);
+                const afterMatch = autocompleteMatch.service.name.slice(nameIdx + searchTerm.length);
                 const spacer = beforeMatch + typedPortion;
                 return (
                   <div className="search-autocomplete-overlay" aria-hidden="true">
                     <span className="search-autocomplete-spacer">{spacer}</span>
                     <span className="search-autocomplete-ghost">{afterMatch}</span>
                     <span className="search-autocomplete-ghost"> — </span>
-                    <span className="search-autocomplete-server">{match.server.name}:{match.service.port}</span>
+                    <span className="search-autocomplete-server">{autocompleteMatch.server.name}:{autocompleteMatch.service.port}</span>
                   </div>
                 );
               })()}
