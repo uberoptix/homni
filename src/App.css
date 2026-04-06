@@ -515,7 +515,7 @@ kbd {
 }
 
 .header-palette-button {
-  color: #FFFFFF;
+  color: var(--accent-text);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -523,7 +523,7 @@ kbd {
 }
 
 .header-palette-button:hover {
-  color: var(--accent-text);
+  color: #FFFFFF;
 }
 
 .header-help-button {
