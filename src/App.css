@@ -356,6 +356,7 @@ kbd {
 .search-container {
   display: flex;
   justify-content: center;
+  justify-self: center;
   width: 100%;
   max-width: 1440px;
 }
