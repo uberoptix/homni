@@ -1,5 +1,38 @@
 # Homni Release Notes
 
+## v0.11.0 (April 2026)
+
+### Search Autocomplete
+- Ghost-text autocomplete when search narrows to a single service (e.g., `Overseerr — ds620slim:5055`)
+- "Various (tab to cycle)" autocomplete when multiple services share the same name across servers
+- Press Enter on a single-match autocomplete to open the service in a new tab
+- Ghost text uses theme-aware colors that adapt across all palettes
+
+### Keyboard Navigation
+- Tab / Shift+Tab cycles through all visible service entries, server by server
+- Gold highlight border on the selected service (zero layout shift)
+- Enter on a highlighted service opens its URL in a new tab
+- Escape clears selection and search in one press, refocuses the search bar
+- Any keypress outside an input automatically refocuses the search bar and captures the keystroke
+- Tab navigation auto-scrolls to off-screen services
+
+### New Themes
+- **Cinema** — dark theme with gold/amber accents (formerly Dark Theme)
+- **Pachyderm** — Evernote-inspired light theme with green header, teal accent text, warm grays
+- **Hunter** — deep purple with pink, blue, and gold accents
+
+### Responsive Layout
+- Search bar centered via CSS Grid on desktop, absolutely positioned on tablet, second row on mobile
+- Converted all layout spacing from rem to fixed px values for consistent gaps across all viewports and zoom levels
+- Mobile: search bar on second row, centered buttons and sort controls, footer line break before copyright
+
+### UI Polish
+- Header icons use accent-text color with white hover
+- Sort button text adapts per theme via --secondary-button-text
+- Server names vertically aligned with Add Service button
+- "Clear search (Esc)" label hint on search results
+- Footer logo aligns to first line of text on mobile
+
 ## 🚀 v0.10.0 - May 2025
 
 ## v0.10.0 (May 11, 2025)

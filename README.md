@@ -9,10 +9,11 @@ Organize and access all your servers and services from one clean dashboard.
 ## Features
 
 - **Instant setup** -- no accounts, no config files, no database
-- **Search** across all servers and services with smart priority filtering
-- **Dark and light themes** with full color customization
+- **Search with autocomplete** -- ghost-text suggestions when results narrow to a single service, with Enter to navigate directly
+- **Tab navigation** -- Tab/Shift+Tab through services with a gold highlight border, Enter to open
+- **Three themes** -- Cinema (dark/gold), Pachyderm (Evernote-inspired light), and Hunter (purple/pink/blue) with full color customization
 - **Import/Export** your configuration as JSON for backup or sharing
-- **Keyboard shortcuts** for fast navigation (Alt+A, Alt+I, Alt+E, Alt+P, /, ?)
+- **Keyboard shortcuts** for fast navigation (Alt+A, Alt+I, Alt+E, Alt+P, /, ?, Tab, Escape)
 - **Responsive** masonry grid layout
 
 ## How It Works
