@@ -5,6 +5,10 @@ WORKDIR /usr/share/nginx/html
 
 # Copy web assets directly to nginx html directory
 COPY web/index.html .
+COPY web/apple-touch-icon.png .
+COPY web/robots.txt .
+COPY web/sitemap.xml .
+COPY web/site.webmanifest .
 COPY web/assets/ ./assets/
 COPY web/images/ ./images/
 COPY web/custom.css .

@@ -1408,6 +1408,36 @@ textarea::placeholder {
   margin-bottom: 2rem;
 }
 
+.homepage-copy {
+  border-top: 1px solid var(--transparent-border);
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  max-width: 920px;
+}
+
+.homepage-copy h3 {
+  color: var(--accent-text);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  line-height: var(--line-height-normal);
+  margin: 0 0 0.75rem;
+}
+
+.homepage-copy h3:not(:first-child) {
+  margin-top: 1.75rem;
+}
+
+.homepage-copy p {
+  color: var(--server-text);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  margin: 0 0 1rem;
+}
+
+.homepage-copy p:last-child {
+  margin-bottom: 0;
+}
+
 /* Server Card Styling */
 .server-header {
   display: flex;

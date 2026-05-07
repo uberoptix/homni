@@ -51,6 +51,7 @@ Pre-built assets in `web/` are a snapshot of the current live deployment.
 
 ## Key Conventions
 
-- All user data stays client-side. Never add server calls, analytics, or external data transmission.
+- All user data (servers, services, preferences) stays client-side in IndexedDB. Never add server calls or external data transmission for user data.
+- Anonymous, privacy-respecting page-view analytics via Umami (self-hosted at `analytics.oneeyeopen.com`, website ID `7ebf0267-834a-4f0d-ac3c-b460469a3a66`) are permitted and currently loaded from `index.html`. CSP in `public/_headers` allow-lists this host. Do not add other third-party scripts, trackers, or analytics providers.
 - Use CSS variables (e.g., `var(--font-size-sm)`, `var(--server-background)`) instead of hard-coded values for colors, font sizes, and component heights.
 - The UI Design Guide (`docs/UI_DESIGN_GUIDE.md`) is the source of truth for button types, card components, notification styles, and typography scales.

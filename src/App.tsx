@@ -1372,6 +1372,36 @@ function App() {
                   Import
                 </button>
               </div>
+
+              <section className="homepage-copy" aria-labelledby="homni-overview-heading">
+                <h3 id="homni-overview-heading">A private dashboard for self-hosted services</h3>
+
+                <p>
+                  Homni gives people who run home labs, personal servers, NAS boxes, media stacks, and small internal tools one reliable place to keep service links. Instead of remembering ports, paths, hostnames, bookmarks, and notes across different browsers, you can build a focused dashboard that reflects the infrastructure you actually use. Each server can hold the services that belong to it, so a media server, reverse proxy, storage node, development machine, or monitoring host stays easy to scan at a glance.
+                </p>
+
+                <p>
+                  The app is designed for private environments where control matters. Your server list, service names, hostnames, notes, preferences, and theme choices stay in the browser on your device. Homni does not require an account, does not send your dashboard data to a hosted database, and does not rely on third-party tracking scripts. For many self-hosters, that local-first model is simpler than adding another service just to manage links to the services they already operate.
+                </p>
+
+                <p>
+                  Day to day, Homni keeps navigation fast. Search filters across servers and services, service rows open directly to the right host and port, and sorting helps larger dashboards stay predictable. Import and export support makes the dashboard portable without making it dependent on a central login. You can keep a backup JSON file with your other admin notes, move a configuration to another browser, or reset a device without rebuilding every link from memory.
+                </p>
+
+                <h3>Useful for home labs, small teams, and personal infrastructure</h3>
+
+                <p>
+                  Homni is intentionally lightweight. It works as a static web app, so it can be hosted on simple infrastructure, served from a container, or used from the public site with data still stored locally. That makes it suitable for hobby labs, household dashboards, workshops, studios, and small technical teams that want a clean launch point for services such as media libraries, dashboards, file storage, documentation, automation tools, network utilities, development servers, and admin panels.
+                </p>
+
+                <p>
+                  Because the dashboard is just an organized index, it can sit alongside whatever access model you already trust. Use local network names, VPN-only hosts, reverse-proxy addresses, or private IPs without changing how those services are secured. Homni keeps the service list readable while leaving authentication, permissions, backups, and monitoring with the systems that already handle them.
+                </p>
+
+                <p>
+                  The interface avoids turning infrastructure management into a heavy project. Add a server, attach the services you use, include notes where they help, and keep the layout readable as the list grows. Homni is not a monitoring suite, password vault, or remote management layer; it is a calm index for the tools you already run. That narrow purpose keeps the experience quick to understand and practical to keep open while maintaining self-hosted systems.
+                </p>
+              </section>
               
             </div>
           </div>

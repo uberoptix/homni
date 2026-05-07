@@ -7,10 +7,13 @@
 .masonry-grid {
   width: 100% !important;
   max-width: 1400px !important;
-  margin: 0 auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
   column-count: 3 !important; /* Reduced from 4 to 3 columns for better distribution */
   column-gap: 20px !important; /* Increased gap between columns for better separation */
-  padding: 0 2rem !important; /* Standardized 2rem horizontal padding */
+  padding: 0 !important; /* Container already provides horizontal padding */
   box-sizing: border-box !important;
 }
 
@@ -291,10 +294,10 @@
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  margin-top: 2rem !important; /* 2rem from header to buttons */
-  margin-bottom: 2rem !important; /* 2rem from buttons to server cards */
+  margin-top: 24px !important;
+  margin-bottom: 24px !important;
   flex-wrap: wrap !important;
-  gap: 1rem !important; /* Standardized 1rem spacing */
+  gap: 16px !important;
   padding: 0 !important;
   width: 100% !important;
   box-sizing: border-box !important;
@@ -423,6 +426,8 @@ input:focus, textarea:focus {
   max-width: 100% !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+  position: relative !important;
+  top: -1.5px !important;
 }
 
 /* Small button adjustments */
@@ -536,30 +541,22 @@ input:focus, textarea:focus {
     flex: 1 1 100% !important;
     max-width: 100% !important;
   }
-  
-  .section-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    margin-top: 2rem !important; /* Preserve top margin on mobile */
-    margin-bottom: 2rem !important; /* Preserve bottom margin on mobile */
-  }
-  
-  .sorting-options {
-    margin-top: 1rem !important;
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
+}
+
+@media (max-width: 1100px) {
 }
 
 @media (max-width: 600px) {
-  .container {
-    padding: 1rem 2rem !important; /* Maintain 2rem horizontal padding even on small screens */
+  .header {
+    padding-bottom: 0 !important;
   }
-  
-  .section-header {
-    padding-top: 1rem;
-    margin-top: 2rem !important; /* Keep top spacing */
-    margin-bottom: 2rem !important; /* Keep bottom spacing */
+
+  .container {
+    padding: 0 32px !important;
+  }
+
+  .container > .section-header {
+    margin-top: 8px !important;
   }
 }
 
@@ -760,8 +757,8 @@ input[type="color"]::-webkit-color-swatch {
 .container {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-  padding-left: 2rem !important;
-  padding-right: 2rem !important;
+  padding-left: 32px !important;
+  padding-right: 32px !important;
   margin-bottom: 0 !important;
   display: flex !important;
   flex-direction: column !important;
@@ -776,15 +773,21 @@ input[type="color"]::-webkit-color-swatch {
   margin-bottom: 0 !important;
 }
 
-/* Exception for section-header to maintain proper spacing */
+/* Fixed spacing around section-header */
 .container > .section-header {
-  margin-top: 2rem !important;
-  margin-bottom: 2rem !important;
+  margin-top: 24px !important;
+  margin-bottom: 24px !important;
+}
+
+@media (max-width: 600px) {
+  .container > .section-header {
+    margin-top: 8px !important;
+  }
 }
 
 /* Exception for footer */
 .container > .footer {
-  margin-top: 2rem !important;
+  margin-top: 24px !important;
   margin-bottom: 0 !important;
 }
 
@@ -808,22 +811,14 @@ input[type="color"]::-webkit-color-swatch {
   */
   
   .container {
-    padding: 1rem 2rem !important; /* Maintain 2rem horizontal padding */
+    padding: 16px 32px !important; /* Maintain 2rem horizontal padding */
   }
   
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
 }
 
 @media (max-width: 600px) {
   .container {
-    padding: 1rem 2rem !important; /* Maintain 2rem horizontal padding even on small screens */
-  }
-  
-  .section-header {
-    padding-top: 1rem;
+    padding: 0 32px !important;
   }
 }
 
@@ -845,16 +840,16 @@ body {
 
 /* Make the app use full page width but center content */
 #root {
-  width: 100vw !important;
-  max-width: 100vw !important;
+  width: 100% !important;
+  max-width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
   overflow-x: hidden !important;
 }
 
 body, html {
-  width: 100vw !important;
-  max-width: 100vw !important;
+  width: 100% !important;
+  max-width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
   overflow-x: hidden !important;
@@ -863,18 +858,21 @@ body, html {
 /* Ensure header spans full width with standardized spacing */
 .header {
   width: 100%;
-  padding-top: 1rem !important; /* Keep top padding */
-  padding-bottom: 1rem !important; /* Ensure exactly 1rem below search bar */
-  padding-left: 2rem !important; /* Keep horizontal padding */
-  padding-right: 2rem !important; /* Keep horizontal padding */
+  padding: 12px 32px !important;
   box-sizing: border-box;
-  gap: 1rem !important; /* Standardized 1rem spacing between header elements */
+  gap: 16px !important;
+}
+
+@media (max-width: 600px) {
+  .header {
+    padding: 12px 32px 8px 32px !important;
+  }
 }
 
 .search-container {
-  flex-grow: 1;
-  max-width: 600px;
-  margin: 0 1rem !important; /* Standardized 1rem spacing */
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto !important;
 }
 
 /* Updated status colors matching the specified hex codes */
@@ -906,7 +904,7 @@ body, html {
   justify-content: space-between !important;
   height: 44px !important;
   min-height: 44px !important;
-  overflow: hidden !important;
+  overflow: visible !important;
   box-sizing: border-box !important;
 }
 
@@ -923,11 +921,7 @@ body, html {
   height: 20px !important;
 }
 
-/* Reduce spacing between buttons row and server cards by 20% */
-.section-header {
-  margin-bottom: 2rem !important; /* Keep 2rem below buttons */
-  margin-top: 2rem !important; /* Maintain 2rem above buttons */
-}
+/* Covered by .container > .section-header rule above */
 
 /* Triple the spacing between dialog titles and first line of text */
 .dialog-content h2.dialog-title {
@@ -1216,9 +1210,6 @@ kbd {
     min-width: 240px !important; /* Even smaller minimum for small screens */
   }
   
-  .section-header {
-    padding-top: 1rem !important;
-  }
 }
 
 /* Add Service button styling */
@@ -1276,8 +1267,8 @@ a.add-service:hover {
 /* Make the app use full page width but center content */
 .homni-app {
   min-height: 100vh !important;
-  width: 100vw !important;
-  max-width: 100vw !important;
+  width: 100% !important;
+  max-width: 100% !important;
   display: flex !important;
   flex-direction: column !important;
   background: var(--page-background) !important;
@@ -1310,11 +1301,7 @@ a.add-service:hover {
   margin-bottom: 0 !important;
 }
 
-/* Make sure container spacing doesn't override the section header margins */
-.container > .section-header {
-  margin-top: 2rem !important;
-  margin-bottom: 2rem !important;
-}
+/* Covered by universal .container > .section-header rule */
 
 /* Service port container */
 .service-port-container {
@@ -1342,8 +1329,8 @@ a.add-service:hover {
 /* Make the app use full page width but center content */
 .homni-app {
   min-height: 100vh !important;
-  width: 100vw !important;
-  max-width: 100vw !important;
+  width: 100% !important;
+  max-width: 100% !important;
   display: flex !important;
   flex-direction: column !important;
   background: var(--page-background) !important;

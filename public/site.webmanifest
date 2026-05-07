@@ -1,0 +1,22 @@
+{
+  "name": "Homni - Private Self-Hosted Services Dashboard",
+  "short_name": "Homni",
+  "description": "Homni is a private browser-based dashboard for organizing self-hosted servers and services, with local storage, fast search, custom themes, and JSON backup.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F2F2F2",
+  "theme_color": "#2DBE60",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon_white.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
