@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Where this project lives
+
+- **Canonical repo:** `github.com/uberoptix/homni` (public).
+- **VPS working copy (primary edit location):** `~/projects/homni.io` on the IONOS VPS (`ssh ionos`) — day-to-day editing happens here going forward, matching the pattern used for `oneeyeopen` and `honestybox`. Run Claude Code sessions from there.
+- **Laptop:** `/Users/jforwood/Documents/Sites/homni.io` is a synced clone for reference/backup, not the primary editing location.
+- **Deployment (unchanged):** GitHub → Cloudflare Pages auto-builds `main` on push (see Deployment section below). There is no VPS-side deploy step for the live site — where the working copy lives has no effect on how homni.io is served.
+
 ## Project Overview
 
 Homni is a self-hosted services dashboard — a single-page React/TypeScript app that lets users organize servers and services in a searchable, themed masonry grid. All data is stored client-side in IndexedDB (with localStorage fallback). Nothing is sent to any server.
