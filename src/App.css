@@ -87,8 +87,7 @@ html {
   display: flex;
   flex-direction: column;
   background: var(--page-background);
-  overflow: hidden;
-  overscroll-behavior: none;
+  overflow-x: hidden;
   margin: 0;
   padding: 0;
   gap: 0;

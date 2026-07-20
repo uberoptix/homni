@@ -1272,8 +1272,7 @@ a.add-service:hover {
   display: flex !important;
   flex-direction: column !important;
   background: var(--page-background) !important;
-  overflow: hidden !important;
-  overscroll-behavior: none !important;
+  overflow-x: hidden !important;
   margin: 0 !important;
   padding: 0 !important;
   gap: 0 !important; /* Remove any gap between flex items */
@@ -1334,12 +1333,8 @@ a.add-service:hover {
   display: flex !important;
   flex-direction: column !important;
   background: var(--page-background) !important;
-  overflow: hidden !important;
-  overscroll-behavior: none !important;
+  overflow-x: hidden !important;
   margin: 0 !important;
   padding: 0 !important;
   gap: 0 !important; /* Remove any gap between flex items */
 }
-
-
-
