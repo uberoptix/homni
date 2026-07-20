@@ -5,8 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Where this project lives
 
 - **Canonical repo:** `github.com/uberoptix/homni` (public).
-- **VPS working copy (primary edit location):** `~/projects/homni.io` on the IONOS VPS (`ssh ionos`) — day-to-day editing happens here going forward, matching the pattern used for `oneeyeopen` and `honestybox`. Run Claude Code sessions from there.
-- **Laptop:** `/Users/jforwood/Documents/Sites/homni.io` is a synced clone for reference/backup, not the primary editing location.
+- **Working copy:** `~/projects/homni.io` on the IONOS VPS (`ssh ionos`) — the sole active working copy. Run Claude Code sessions from here.
+- **Laptop:** no longer used for this project. The former laptop copy was archived to `~/Documents/Sites/ARCHIVE/homni.io` on 2026-07-20 (reference only — do not edit or deploy from there).
 - **Deployment (unchanged):** GitHub → Cloudflare Pages auto-builds `main` on push (see Deployment section below). There is no VPS-side deploy step for the live site — where the working copy lives has no effect on how homni.io is served.
 
 ## Project Overview
