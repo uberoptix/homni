@@ -610,8 +610,7 @@ function App() {
     e.preventDefault();
     const match = getAutocompleteMatch();
     if (match && match.url) {
-      window.open(match.url, '_blank', 'noopener,noreferrer');
-      setSearchTerm('');
+      window.location.href = match.url;
     }
   };
 
@@ -840,7 +839,7 @@ function App() {
         const match = visible.find(v => v.service.id === selectedServiceId);
         if (match) {
           const url = `${match.service.protocol || 'http'}://${match.server.hostname}:${match.service.port}${match.service.path || ''}`;
-          window.open(url, '_blank', 'noopener,noreferrer');
+          window.location.href = url;
         }
         return;
       }

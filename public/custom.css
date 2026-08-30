@@ -1167,7 +1167,7 @@ kbd {
 @media (max-width: 1400px) {
   .masonry-grid {
     column-count: 2 !important; /* Reduced from 3 to 2 columns on medium-large screens */
-    max-width: 1200px !important; /* Adjusted max-width for better column sizing */
+    max-width: 100% !important;
   }
   
   .server-card {
