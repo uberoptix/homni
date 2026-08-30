@@ -11,8 +11,8 @@
   margin-right: auto !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
-  column-count: 3 !important; /* Reduced from 4 to 3 columns for better distribution */
-  column-gap: 20px !important; /* Increased gap between columns for better separation */
+  column-width: 400px !important;
+  column-gap: 20px !important;
   padding: 0 !important; /* Container already provides horizontal padding */
   box-sizing: border-box !important;
 }
@@ -1164,28 +1164,6 @@ kbd {
 
 /* ======== RESPONSIVE LAYOUT ======== */
 /* Responsive column-count adjustments */
-@media (max-width: 1400px) {
-  .masonry-grid {
-    column-count: 2 !important; /* Reduced from 3 to 2 columns on medium-large screens */
-    max-width: 100% !important;
-  }
-  
-  .server-card {
-    min-width: 260px !important; /* Slightly smaller minimum for medium screens */
-  }
-}
-
-@media (max-width: 900px) {
-  .masonry-grid {
-    column-count: 1 !important; /* 1 column on small screens */
-    max-width: 600px !important; /* Constrained width for better readability */
-  }
-  
-  .server-card {
-    min-width: 240px !important; /* Even smaller minimum for small screens */
-  }
-  
-}
 
 /* Add Service button styling */
 .small-button.add-service, 
