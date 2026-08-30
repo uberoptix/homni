@@ -1157,31 +1157,6 @@ kbd {
   line-height: var(--line-height-compact) !important;
 }
 
-.config-icon {
-  width: 16px !important;
-  height: 16px !important;
-  position: absolute !important;
-  left: 10px !important; /* Consistent left position for all config icons */
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  background-color: var(--secondary-text) !important;
-  -webkit-mask-image: url('/images/config.png') !important;
-  -webkit-mask-size: contain !important;
-  -webkit-mask-repeat: no-repeat !important;
-  -webkit-mask-position: center !important;
-  mask-image: url('/images/config.png') !important;
-  mask-size: contain !important;
-  mask-repeat: no-repeat !important;
-  mask-position: center !important;
-  z-index: 2 !important; /* Ensure icon is above other elements */
-}
-
-.config-icon:hover {
-  background-color: var(--accent-text) !important;
-}
-
 /* Service item hover effect */
 .service-item:hover {
   background-color: var(--hover-service-item) !important;
@@ -1323,18 +1298,4 @@ a.add-service:hover {
   align-items: center !important;
   justify-content: space-between !important;
   box-shadow: none !important;
-}
-
-/* Make the app use full page width but center content */
-.homni-app {
-  min-height: 100vh !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  background: var(--page-background) !important;
-  overflow-x: hidden !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  gap: 0 !important; /* Remove any gap between flex items */
 }

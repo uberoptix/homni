@@ -32,6 +32,7 @@ interface Service {
   port: number;
   path?: string;
   notes?: string;
+  protocol?: 'http' | 'https';
 }
 
 interface ColorPalette {
@@ -107,6 +108,57 @@ const lightPalette: ColorPalette = {
 
 type SortOption = 'name' | 'port';
 type StorageType = 'localStorage' | 'sessionStorage' | 'indexedDB' | 'none';
+
+const isValidHexColor = (value: unknown): value is string =>
+  typeof value === 'string' && /^#([0-9A-Fa-f]{3}){1,2}$/.test(value);
+
+const isValidHostname = (hostname: string): boolean =>
+  hostname.length > 0 && !/[/?#\s]/.test(hostname);
+
+const isValidPath = (path: string): boolean =>
+  !path || path.startsWith('/');
+
+const isValidService = (s: unknown): s is Service => {
+  if (!s || typeof s !== 'object') return false;
+  const obj = s as Record<string, unknown>;
+  return (
+    typeof obj.id === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.port === 'number' &&
+    obj.port >= 1 && obj.port <= 65535 &&
+    (obj.path === undefined || typeof obj.path === 'string') &&
+    (obj.notes === undefined || typeof obj.notes === 'string') &&
+    (obj.protocol === undefined || obj.protocol === 'http' || obj.protocol === 'https')
+  );
+};
+
+const isValidServer = (s: unknown): s is Server => {
+  if (!s || typeof s !== 'object') return false;
+  const obj = s as Record<string, unknown>;
+  return (
+    typeof obj.id === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.hostname === 'string' &&
+    isValidHostname(obj.hostname) &&
+    Array.isArray(obj.services) &&
+    (obj.services as unknown[]).every(isValidService) &&
+    (obj.notes === undefined || typeof obj.notes === 'string') &&
+    (obj.notesVisible === undefined || typeof obj.notesVisible === 'boolean')
+  );
+};
+
+const isValidPalette = (p: unknown): p is ColorPalette => {
+  if (!p || typeof p !== 'object') return false;
+  const obj = p as Record<string, unknown>;
+  const keys: (keyof ColorPalette)[] = [
+    'headerBackground', 'pageBackground', 'serverBackground', 'serviceBackground',
+    'serverText', 'serviceText', 'secondaryText', 'accentButton', 'secondaryButton',
+    'primaryButtonText', 'secondaryButtonText', 'statusRed', 'statusAmber', 'statusGreen'
+  ];
+  return keys.every(key => isValidHexColor(obj[key]));
+};
+
+const LS_FALLBACK_KEY = 'servers';
 
 // Directly use IndexedDB as primary storage
 const DB_NAME = 'homni';
@@ -400,7 +452,7 @@ function App() {
   const [isEditingService, setIsEditingService] = useState(false);
   const [currentServerId, setCurrentServerId] = useState<string | null>(null);
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
-  const [newService, setNewService] = useState<{ name: string; port: string; path: string; notes: string }>({ name: '', port: '', path: '', notes: '' });
+  const [newService, setNewService] = useState<{ name: string; port: string; path: string; notes: string; protocol: 'http' | 'https' }>({ name: '', port: '', path: '', notes: '', protocol: 'http' });
   const [sortBy, setSortBy] = useState<SortOption>('name');
   const [, setStorageType] = useState<StorageType>('indexedDB');
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -516,7 +568,7 @@ function App() {
 
     if (matches.length === 1) {
       const { service, server } = matches[0];
-      const url = `http://${server.hostname}:${service.port}${service.path || ''}`;
+      const url = `${service.protocol || 'http'}://${server.hostname}:${service.port}${service.path || ''}`;
       return { service, server, url, isVarious: false as const };
     }
 
@@ -611,11 +663,11 @@ function App() {
         } else {
           try {
             // Fallback to localStorage
-            const localData = localStorage.getItem('servers');
+            const localData = localStorage.getItem(LS_FALLBACK_KEY);
             if (localData) {
               const parsedData = JSON.parse(localData);
               // Ensure all servers have notesVisible property properly set
-              const updatedServers = parsedData.map((server: any) => ({
+              const updatedServers = parsedData.map((server: Record<string, unknown>) => ({
                 ...server,
                 notesVisible: server.notesVisible === true // Explicitly check for true, defaults to false
               }));
@@ -663,13 +715,12 @@ function App() {
     const saveData = async () => {
       try {
         const success = await saveToIndexedDB(servers);
-        if (success) {
-        } else {
+        if (!success) {
           console.error('Failed to save to IndexedDB');
           
           // Try fallback to localStorage
           try {
-            localStorage.setItem('dashboard_servers', JSON.stringify(servers));
+            localStorage.setItem(LS_FALLBACK_KEY, JSON.stringify(servers));
           } catch (storageError) {
             console.error('Fallback save to localStorage failed:', storageError);
           }
@@ -702,11 +753,12 @@ function App() {
             e.preventDefault();
             setIsDialogOpen(true);
             break;
-          case 'i':
+          case 'i': {
             e.preventDefault();
-            document.getElementById('import-file')?.click() ||
-              document.getElementById('welcome-import-file')?.click();
+            const importEl = document.getElementById('import-file') ?? document.getElementById('welcome-import-file');
+            importEl?.click();
             break;
+          }
           case 'e':
             e.preventDefault();
             exportData();
@@ -787,7 +839,7 @@ function App() {
         const visible = getVisibleServices();
         const match = visible.find(v => v.service.id === selectedServiceId);
         if (match) {
-          const url = `http://${match.server.hostname}:${match.service.port}${match.service.path || ''}`;
+          const url = `${match.service.protocol || 'http'}://${match.server.hostname}:${match.service.port}${match.service.path || ''}`;
           window.open(url, '_blank', 'noopener,noreferrer');
         }
         return;
@@ -806,7 +858,8 @@ function App() {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHelpOpen, isPaletteDialogOpen, isAddingService, isDialogOpen, selectedServiceId, searchTerm, servers, sortBy]);
 
   const handleAddServer = () => {
     if (!newServer.name || !newServer.hostname) {
@@ -814,9 +867,13 @@ function App() {
       return;
     }
 
+    if (!isValidHostname(newServer.hostname)) {
+      showNotification('Hostname must not contain slashes, query strings, or spaces', true);
+      return;
+    }
 
     const server: Server = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       name: newServer.name,
       hostname: newServer.hostname,
       services: [],
@@ -852,7 +909,11 @@ function App() {
       return;
     }
 
-    // Log the actual boolean value for clarity
+    if (!isValidHostname(newServer.hostname)) {
+      showNotification('Hostname must not contain slashes, query strings, or spaces', true);
+      return;
+    }
+
     const notesVisibleValue = Boolean(newServer.notesVisible);
 
     setServers(servers.map((server: Server) => {
@@ -895,12 +956,18 @@ function App() {
       return;
     }
 
+    if (newService.path && !isValidPath(newService.path)) {
+      showNotification('Path must start with /', true);
+      return;
+    }
+
     const service: Service = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       name: newService.name,
       port: portNum,
       path: newService.path || undefined,
-      notes: newService.notes || undefined
+      notes: newService.notes || undefined,
+      protocol: newService.protocol
     };
 
     setServers(servers.map((server: Server) => {
@@ -913,7 +980,7 @@ function App() {
       return server;
     }));
 
-    setNewService({ name: '', port: '', path: '', notes: '' });
+    setNewService({ name: '', port: '', path: '', notes: '', protocol: 'http' });
     setIsAddingService(false);
   };
 
@@ -942,7 +1009,8 @@ function App() {
           name: service.name,
           port: service.port.toString(),
           path: service.path || '',
-          notes: service.notes || ''
+          notes: service.notes || '',
+          protocol: service.protocol || 'http'
         });
         setIsEditingService(true);
         setIsAddingService(true);
@@ -962,6 +1030,11 @@ function App() {
       return;
     }
 
+    if (newService.path && !isValidPath(newService.path)) {
+      showNotification('Path must start with /', true);
+      return;
+    }
+
     setServers(servers.map((server: Server) => {
       if (server.id === currentServerId) {
         return {
@@ -973,7 +1046,8 @@ function App() {
                 name: newService.name,
                 port: portNum,
                 path: newService.path || undefined,
-                notes: newService.notes || undefined
+                notes: newService.notes || undefined,
+                protocol: newService.protocol
               };
             }
             return service;
@@ -983,7 +1057,7 @@ function App() {
       return server;
     }));
 
-    setNewService({ name: '', port: '', path: '', notes: '' });
+    setNewService({ name: '', port: '', path: '', notes: '', protocol: 'http' });
     setIsAddingService(false);
     setIsEditingService(false);
     setEditingServiceId(null);
@@ -1156,31 +1230,46 @@ function App() {
         try {
           const content = e.target?.result as string;
           const parsedData = JSON.parse(content);
-          
+
+          let serversToImport: unknown[] | null = null;
+
           if (Array.isArray(parsedData.servers)) {
-            await saveToIndexedDB(parsedData.servers);
-            setServers(parsedData.servers);
-            
-            if (parsedData.colorPalette) {
-              await savePaletteToIndexedDB(parsedData.colorPalette);
-              setColorPalette(parsedData.colorPalette);
-              applyColorPalette(parsedData.colorPalette);
-            }
-            
-            if (parsedData.preferences && parsedData.preferences.sortBy) {
-              await savePreferencesToIndexedDB({ sortBy: parsedData.preferences.sortBy });
-              setSortBy(parsedData.preferences.sortBy);
-            }
-            
-            showNotification("Data imported successfully");
+            serversToImport = parsedData.servers;
           } else if (Array.isArray(parsedData)) {
-            // Legacy import (servers only)
-            await saveToIndexedDB(parsedData);
-            setServers(parsedData);
-            showNotification("Data imported successfully");
+            serversToImport = parsedData;
           } else {
             throw new Error("Invalid import format");
           }
+
+          if (!serversToImport.every(isValidServer)) {
+            showNotification("Import failed: file contains invalid server or service data", true);
+            return;
+          }
+
+          const validServers = serversToImport as Server[];
+          await saveToIndexedDB(validServers);
+          setServers(validServers);
+
+          if (parsedData.colorPalette) {
+            if (isValidPalette(parsedData.colorPalette)) {
+              await savePaletteToIndexedDB(parsedData.colorPalette);
+              setColorPalette(parsedData.colorPalette);
+              applyColorPalette(parsedData.colorPalette);
+            } else {
+              showNotification("Servers imported, but color palette was invalid and skipped", false);
+              return;
+            }
+          }
+
+          if (parsedData.preferences && parsedData.preferences.sortBy) {
+            const sort = parsedData.preferences.sortBy;
+            if (sort === 'name' || sort === 'port') {
+              await savePreferencesToIndexedDB({ sortBy: sort });
+              setSortBy(sort);
+            }
+          }
+
+          showNotification("Data imported successfully");
         } catch (parseError) {
           console.error("Import parsing failed", parseError);
           showNotification("Import failed: Invalid file format", true);
@@ -1503,9 +1592,9 @@ function App() {
                             onClick={() => openEditServiceDialog(server.id, service.id)}
                             title="Edit Service Settings"
                           ></div>
-                          <a 
-                            href={`http://${server.hostname}:${service.port}${service.path || ''}`} 
-                            target="_blank" 
+                          <a
+                            href={`${service.protocol || 'http'}://${server.hostname}:${service.port}${service.path || ''}`}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="service-link"
                             title={`Open ${service.name} (Port ${service.port})`}
@@ -1685,7 +1774,27 @@ function App() {
                   max="65535"
                 />
               </div>
-              
+
+              <div className="form-group">
+                <label htmlFor="serviceProtocol">Protocol</label>
+                <div className="sort-buttons">
+                  <button
+                    type="button"
+                    className={`sort-button ${newService.protocol === 'http' ? 'active' : ''}`}
+                    onClick={() => setNewService({...newService, protocol: 'http'})}
+                  >
+                    HTTP
+                  </button>
+                  <button
+                    type="button"
+                    className={`sort-button ${newService.protocol === 'https' ? 'active' : ''}`}
+                    onClick={() => setNewService({...newService, protocol: 'https'})}
+                  >
+                    HTTPS
+                  </button>
+                </div>
+              </div>
+
               <div className="form-group">
                 <label htmlFor="servicePath">Path (optional)</label>
                 <input
