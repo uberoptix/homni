@@ -10,8 +10,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Commits can also land on GitHub without touching this checkout.** Claude Code cloud
   sessions work on GitHub directly (the `claude/security-qaqc-review-cmdPB` PR merged
   2026-08-30 was one). Run `git pull --ff-only` here before editing, and never assume
-  this checkout is ahead of `origin/main` without checking. The laptop copy under
-  `~/Documents/GitHub/homni` is retired too; only this checkout and GitHub count.
+  this checkout is ahead of `origin/main` without checking.
+- **Laptop copies are gone.** `~/Documents/GitHub/homni` on the MacBook (a May 2025 clone
+  with uncommitted edits) was archived to `~/Documents/Sites/ARCHIVE/homni_github_260904.zip`
+  and deleted on 2026-09-04; its uncommitted working tree is preserved verbatim on the
+  `mac-2025-05-uncommitted` branch here and on GitHub for review. Only this checkout and
+  GitHub count. `~/Documents/Projects/Homni` on the Mac holds branding and business
+  material only, no code.
 - **Deployment (unchanged):** GitHub → Cloudflare Pages auto-builds `main` on push (see Deployment section below). There is no VPS-side deploy step for the live site — where the working copy lives has no effect on how homni.io is served.
 
 ## Project Overview
