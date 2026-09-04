@@ -4,11 +4,17 @@
 
 PORT=8080
 
+SKIP_BUILD=false
+
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
     --port=*)
       PORT="${1#*=}"
+      shift
+      ;;
+    --skip-build)
+      SKIP_BUILD=true
       shift
       ;;
     --stop)
@@ -21,6 +27,7 @@ while [[ $# -gt 0 ]]; do
       echo "Usage: $0 [options]"
       echo "Options:"
       echo "  --port=NUMBER       Set server port (default: 8080)"
+      echo "  --skip-build        Skip the build step and serve existing files"
       echo "  --stop              Stop running server"
       echo "  --help              Show this help message"
       exit 0
@@ -32,6 +39,23 @@ while [[ $# -gt 0 ]]; do
 done
 
 echo "===== HOMNI SERVER ====="
+
+# Build the application first (unless skipped)
+if [ "$SKIP_BUILD" = false ]; then
+  echo "Building application..."
+  if ! npm run build; then
+    echo "❌ Build failed. Please check for errors above."
+    exit 1
+  fi
+  echo "✅ Build completed successfully"
+else
+  echo "⏭️  Skipping build step"
+  if [ ! -d "web" ]; then
+    echo "❌ No web directory found. Run without --skip-build first."
+    exit 1
+  fi
+fi
+
 echo "Starting server on port $PORT..."
 
 # Kill any existing server processes on this port

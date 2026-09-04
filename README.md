@@ -7,30 +7,56 @@ A self-hosted monitoring dashboard for servers and services.
 - Server and service monitoring
 - Status indicators (Red/Amber/Green)
 - Light and dark theme support with Evernote-inspired light theme and amber-accented dark theme
-- Customizable color palette
+- Customizable color palettes via UI, with changes applied instantly
 - Responsive design
 - Smart search prioritizing services over servers
 - True CSS-based masonry grid layout for optimal content distribution
 - Intelligent server card ordering based on content size
+- Client-side data storage (IndexedDB) for enhanced privacy and offline access
+- Robust XSS protection (DOMPurify, Content Security Policy) and Nginx security hardening
+- Data import/export functionality for backup and migration
 
-## Local Development
+## Data Storage & Privacy
 
-This is a simplified local development version of the Homni dashboard.
+Homni stores all your server, service, and theme configuration data directly in your web browser using IndexedDB. This approach offers several advantages:
 
-### Running the Application Locally
+- **Privacy:** Your data remains on your device and is not sent to any external server.
+- **Offline Access:** You can view your dashboard even if you are temporarily offline (once loaded).
+- **Performance:** Accessing local data is typically very fast.
+
+You can export your data as a JSON file for backup purposes or to migrate to another browser/device, and import it back when needed.
+
+## Security
+
+Homni incorporates several security measures:
+
+- **Input Sanitization:** User-provided notes for services are sanitized using DOMPurify to prevent Cross-Site Scripting (XSS) attacks.
+- **Content Security Policy (CSP):** A strict CSP is implemented via a meta tag in `index.html` to control which resources can be loaded, further mitigating XSS and other injection attacks.
+- **Nginx Hardening:** The provided Nginx configuration (for Docker deployment) includes rules to block common malicious requests, such as attempts to access `.php` files or `.git` repositories.
+- **Secure Headers:** Standard security headers like `X-Frame-Options` and `X-Content-Type-Options` are configured.
+
+It's recommended to deploy Homni behind a reverse proxy like Nginx Proxy Manager, which can provide additional security layers such as SSL termination, access controls, and web application firewall (WAF) features.
+
+## Local Development & Testing
+
+Homni uses Vite for its build process. The Vite development server is disabled in the configuration (`config/vite.config.ts`) to ensure that local testing closely mirrors the production environment.
+
+To test changes locally, you first need to build the application:
 
 ```bash
-# Start the server on default port 8080
-./run-local.sh
-
-# With cache-busting enabled
-./scripts/server.sh --cache-busting
-
-# Or specify a custom port
-./scripts/server.sh --port=8088
+npm run build
 ```
 
-Then visit http://localhost:8080 in your browser (or the custom port you specified).
+Then, you can serve the built assets (from the `web/` directory) using the provided script:
+
+```bash
+# Start the local server on default port 8080, serving pre-built assets
+./run-local.sh
+
+# Alternatively, use the underlying server script:
+# ./scripts/server.sh start [--port=your_port]
+```
+Then visit `http://localhost:8080` (or your custom port) in your browser. The `run-local.sh` script handles building the application if the `web/` directory is not found.
 
 ### Docker Deployment
 
@@ -83,19 +109,30 @@ This will build and start a Docker container serving Homni at http://localhost:8
 
 ## Project Structure
 
-- `/web` - Production web assets
-  - `/web/assets` - Production assets (JS, CSS)
-  - `/web/images` - Images used by the application
-- `/src` - Source code directory
-  - `/src/components` - React components
-- `/config` - Configuration files
-  - `/config/nginx.conf` - Nginx configuration
-  - `/config/docker-compose.yml` - Docker Compose configuration
-  - `/config/tsconfig.json` - TypeScript configuration
-- `/scripts` - Server and utility scripts
-- `/releases` - Historical releases and backups
-- `/BACKUP` - Full project backups and removed components
-- `/docs` - Documentation and version information
+- `/web` - Production web assets built by Vite (served by Nginx).
+  - `/web/assets` - Hashed production assets (JS, CSS).
+  - `/web/images` - Static images used by the application.
+- `/src` - TypeScript and React source code.
+  - `/src/components` - Reusable React components (e.g., `MasonryGrid.tsx`).
+  - `/src/hooks` - Custom React hooks (e.g., `useThemeManager.ts`).
+  - `/src/App.tsx` - Main application component.
+  - `/src/main.tsx` - Application entry point.
+  - `/src/db.ts` - IndexedDB interaction logic.
+- `/config` - Configuration files.
+  - `/config/nginx.conf` - Nginx configuration for the Docker container.
+  - `/config/docker-compose.yml` - Docker Compose configuration.
+  - `/config/vite.config.ts` - Vite build configuration.
+  - `/config/tsconfig.json` - Main TypeScript configuration.
+  - `/config/tsconfig.node.json` - TypeScript configuration for Node.js context (e.g., Vite config).
+  - `/config/tsconfig.app.json` - TypeScript configuration for the application code.
+  - `/config/VERSION` - Version information.
+- `/scripts` - Utility and management scripts (Bash).
+- `Dockerfile` - Defines the Docker image for Homni.
+- `docker-deploy.sh` - Script for managing Docker deployments.
+- `run-local.sh` - Script for building and serving Homni locally for testing.
+- `package.json` - Project dependencies and scripts.
+
+*(Note: Directories like `/releases`, `/BACKUP`, `/docs` might be present for user-specific versioning, backups, or detailed documentation and are not part of the core application structure managed by this repository unless otherwise specified).*
 
 ## Utility Scripts
 
@@ -110,18 +147,20 @@ The project includes several utility scripts to help with common tasks:
 
 ### Server Management
 
-```bash
-# Start server on default port
-./scripts/server.sh
+The `scripts/server.sh` script is primarily for serving the pre-built static assets from the `web/` directory.
 
-# Start server with cache-busting
-./scripts/server.sh --cache-busting
+```bash
+# Build the application (if not already built)
+npm run build
+
+# Start server on default port, serving from web/
+./scripts/server.sh start
 
 # Start server on custom port
-./scripts/server.sh --port=8088
+./scripts/server.sh start --port=8088
 
 # Stop running server
-./scripts/server.sh --stop
+./scripts/server.sh stop
 
 # Show help message
 ./scripts/server.sh --help

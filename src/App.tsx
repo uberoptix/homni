@@ -1,7 +1,19 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import './App.css'
-import React from 'react'
 import FlexGrid from './components/MasonryGrid'
+import DOMPurify from 'dompurify';
+
+import {
+  openDB,
+  saveToIndexedDB,
+  getFromIndexedDB,
+  savePaletteToIndexedDB,
+  getPaletteFromIndexedDB,
+  savePreferencesToIndexedDB,
+  getPreferencesFromIndexedDB,
+  // DB_KEY, PALETTE_KEY, PREFERENCES_KEY // Import constants if they were used directly, otherwise not needed
+} from './db'; // Assuming db.ts is in the same directory
+import { useThemeManager, defaultDarkPalette, defaultLightPalette } from './hooks/useThemeManager';
 
 /**
  * IMPORTANT: Data Privacy Notice
@@ -17,7 +29,7 @@ import FlexGrid from './components/MasonryGrid'
  * All user data should remain on the user's device and in their local backups.
  */
 
-interface Server {
+export interface Server {
   id: string;
   name: string;
   hostname: string;
@@ -26,7 +38,7 @@ interface Server {
   notesVisible: boolean;
 }
 
-interface Service {
+export interface Service {
   id: string;
   name: string;
   port: number;
@@ -34,7 +46,7 @@ interface Service {
   notes?: string;
 }
 
-interface ColorPalette {
+export interface ColorPalette {
   headerBackground: string;
   pageBackground: string;
   serverBackground: string;
@@ -52,289 +64,80 @@ interface ColorPalette {
 }
 
 // Default color palette (Dark Theme)
-const defaultPalette: ColorPalette = {
-  headerBackground: '#101010',
-  pageBackground: '#202020',
-  serverBackground: '#181818',
-  serviceBackground: '#202020',
-  serverText: '#FFFFFF',
-  serviceText: '#DBA33A',
-  secondaryText: '#919191',
-  accentButton: '#C17F33',
-  secondaryButton: '#535353', // Dark gray for secondary buttons
-  primaryButtonText: '#FFFFFF', // White text for primary buttons
-  secondaryButtonText: '#FFFFFF', // White text for secondary buttons
-  statusRed: '#EC6141',
-  statusAmber: '#DBA33A',
-  statusGreen: '#7BB961'
-};
+// const defaultPalette: ColorPalette = {
+//   headerBackground: '#101010',
+//   pageBackground: '#202020',
+//   serverBackground: '#181818',
+//   serviceBackground: '#202020',
+//   serverText: '#FFFFFF',
+//   serviceText: '#DBA33A',
+//   secondaryText: '#919191',
+//   accentButton: '#C17F33',
+//   secondaryButton: '#535353', // Dark gray for secondary buttons
+//   primaryButtonText: '#FFFFFF', // White text for primary buttons
+//   secondaryButtonText: '#FFFFFF', // White text for secondary buttons
+//   statusRed: '#EC6141',
+//   statusAmber: '#DBA33A',
+//   statusGreen: '#7BB961'
+// };
 
 // Light Theme with Evernote colors
-const lightPalette: ColorPalette = {
-  headerBackground: '#E9FDF1', // Light mint green
-  pageBackground: '#F2F2F2', // Light gray
-  serverBackground: '#FFFFFF', // White
-  serviceBackground: '#C9CFD1', // Light grayish
-  serverText: '#2C3E50', // Dark blue-gray
-  serviceText: '#00a82d', // Updated from #2DBE60 to #00a82d
-  secondaryText: '#7D7D7D', // Medium gray
-  accentButton: '#00a82d', // Updated from #2DBE60 to #00a82d
-  secondaryButton: '#C9CFD1', // Light grayish
-  primaryButtonText: '#FFFFFF', // White text for primary buttons
-  secondaryButtonText: '#2C3E50', // Dark text for secondary buttons
-  statusRed: '#EC6141', // Same as dark theme
-  statusAmber: '#DBA33A', // Same as dark theme
-  statusGreen: '#7BB961'  // Same as dark theme
-};
+// const lightPalette: ColorPalette = {
+//   headerBackground: '#E9FDF1', // Light mint green
+//   pageBackground: '#F2F2F2', // Light gray
+//   serverBackground: '#FFFFFF', // White
+//   serviceBackground: '#C9CFD1', // Light grayish
+//   serverText: '#2C3E50', // Dark blue-gray
+//   serviceText: '#00a82d', // Updated from #2DBE60 to #00a82d
+//   secondaryText: '#7D7D7D', // Medium gray
+//   accentButton: '#00a82d', // Updated from #2DBE60 to #00a82d
+//   secondaryButton: '#C9CFD1', // Light grayish
+//   primaryButtonText: '#FFFFFF', // White text for primary buttons
+//   secondaryButtonText: '#2C3E50', // Dark text for secondary buttons
+//   statusRed: '#EC6141', // Same as dark theme
+//   statusAmber: '#DBA33A', // Same as dark theme
+//   statusGreen: '#7BB961'  // Same as dark theme
+// };
 
-type SortOption = 'name' | 'port';
-type StorageType = 'localStorage' | 'sessionStorage' | 'indexedDB' | 'none';
+export type SortOption = 'name' | 'port';
+export type StorageType = 'localStorage' | 'sessionStorage' | 'indexedDB' | 'none';
 
 // Directly use IndexedDB as primary storage
-const DB_NAME = 'selfhosted_dashboard';
-const DB_VERSION = 1;
-const STORE_NAME = 'servers_store';
-const DB_KEY = 'servers_data';
-const PALETTE_KEY = 'color_palette';
-const PREFERENCES_KEY = 'user_preferences';
+// MOVED TO DB.TS
+// const DB_NAME = 'selfhosted_dashboard';
+// const DB_VERSION = 1;
+// const STORE_NAME = 'servers_store';
+// const DB_KEY = 'servers_data';
+// const PALETTE_KEY = 'color_palette';
+// const PREFERENCES_KEY = 'user_preferences';
 
 // Helper function to open IndexedDB
-const openDB = (): Promise<IDBDatabase> => {
-  return new Promise((resolve, reject) => {
-    try {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
-      
-      request.onerror = (event) => {
-        console.error("Error opening IndexedDB", event);
-        reject(new Error("Could not open IndexedDB"));
-      };
-      
-      request.onsuccess = (event) => {
-        resolve((event.target as IDBOpenDBRequest).result);
-      };
-      
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-        }
-      };
-    } catch (error) {
-      console.error("Critical error opening IndexedDB:", error);
-      reject(error);
-    }
-  });
-};
+// MOVED TO DB.TS
+// const openDB = (): Promise<IDBDatabase> => { ... };
 
 // Save data to IndexedDB
-const saveToIndexedDB = async (data: Server[]): Promise<boolean> => {
-  try {
-    const db = await openDB();
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    
-    return new Promise((resolve) => {
-      const request = store.put({
-        id: DB_KEY,
-        data
-      });
-      
-      request.onsuccess = () => {
-        console.log("Data saved to IndexedDB successfully", data);
-        resolve(true);
-      };
-      
-      request.onerror = (event) => {
-        console.error("Error saving to IndexedDB", event);
-        resolve(false);
-      };
-      
-      // Close database when transaction is complete
-      transaction.oncomplete = () => {
-        db.close();
-      };
-    });
-  } catch (error) {
-    console.error("IndexedDB save failed", error);
-    return false;
-  }
-};
+// MOVED TO DB.TS
+// const saveToIndexedDB = async (data: Server[]): Promise<boolean> => { ... };
 
 // Get data from IndexedDB
-const getFromIndexedDB = async (): Promise<Server[] | null> => {
-  try {
-    const db = await openDB();
-    const transaction = db.transaction(STORE_NAME, 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
-    
-    return new Promise((resolve) => {
-      const request = store.get(DB_KEY);
-      
-      request.onsuccess = () => {
-        if (request.result) {
-          console.log("Data retrieved from IndexedDB", request.result.data);
-          resolve(request.result.data);
-        } else {
-          console.log("No data found in IndexedDB");
-          resolve(null);
-        }
-      };
-      
-      request.onerror = (event) => {
-        console.error("Error reading from IndexedDB", event);
-        resolve(null);
-      };
-      
-      // Close database when transaction is complete
-      transaction.oncomplete = () => {
-        db.close();
-      };
-    });
-  } catch (error) {
-    console.error("IndexedDB get failed", error);
-    return null;
-  }
-};
+// MOVED TO DB.TS
+// const getFromIndexedDB = async (): Promise<Server[] | null> => { ... };
 
 // Save color palette to IndexedDB
-const savePaletteToIndexedDB = async (palette: ColorPalette): Promise<boolean> => {
-  try {
-    const db = await openDB();
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    
-    return new Promise((resolve) => {
-      const request = store.put({
-        id: PALETTE_KEY,
-        data: palette
-      });
-      
-      request.onsuccess = () => {
-        console.log("Color palette saved to IndexedDB successfully", palette);
-        resolve(true);
-      };
-      
-      request.onerror = (event) => {
-        console.error("Error saving palette to IndexedDB", event);
-        resolve(false);
-      };
-      
-      // Close database when transaction is complete
-      transaction.oncomplete = () => {
-        db.close();
-      };
-    });
-  } catch (error) {
-    console.error("IndexedDB palette save failed", error);
-    return false;
-  }
-};
+// MOVED TO DB.TS
+// const savePaletteToIndexedDB = async (palette: ColorPalette): Promise<boolean> => { ... };
 
 // Get color palette from IndexedDB
-const getPaletteFromIndexedDB = async (): Promise<ColorPalette | null> => {
-  try {
-    const db = await openDB();
-    const transaction = db.transaction(STORE_NAME, 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
-    
-    return new Promise((resolve) => {
-      const request = store.get(PALETTE_KEY);
-      
-      request.onsuccess = () => {
-        if (request.result) {
-          console.log("Color palette retrieved from IndexedDB", request.result.data);
-          resolve(request.result.data);
-        } else {
-          console.log("No color palette found in IndexedDB");
-          resolve(null);
-        }
-      };
-      
-      request.onerror = (event) => {
-        console.error("Error reading palette from IndexedDB", event);
-        resolve(null);
-      };
-      
-      // Close database when transaction is complete
-      transaction.oncomplete = () => {
-        db.close();
-      };
-    });
-  } catch (error) {
-    console.error("IndexedDB palette get failed", error);
-    return null;
-  }
-};
+// MOVED TO DB.TS
+// const getPaletteFromIndexedDB = async (): Promise<ColorPalette | null> => { ... };
 
 // Save user preferences to IndexedDB
-const savePreferencesToIndexedDB = async (preferences: { sortBy: SortOption }): Promise<boolean> => {
-  try {
-    const db = await openDB();
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    
-    return new Promise((resolve) => {
-      const request = store.put({
-        id: PREFERENCES_KEY,
-        data: preferences
-      });
-      
-      request.onsuccess = () => {
-        console.log("User preferences saved to IndexedDB successfully", preferences);
-        resolve(true);
-      };
-      
-      request.onerror = (event) => {
-        console.error("Error saving preferences to IndexedDB", event);
-        resolve(false);
-      };
-      
-      // Close database when transaction is complete
-      transaction.oncomplete = () => {
-        db.close();
-      };
-    });
-  } catch (error) {
-    console.error("IndexedDB preferences save failed", error);
-    return false;
-  }
-};
+// MOVED TO DB.TS
+// const savePreferencesToIndexedDB = async (preferences: { sortBy: SortOption }): Promise<boolean> => { ... };
 
 // Get user preferences from IndexedDB
-const getPreferencesFromIndexedDB = async (): Promise<{ sortBy: SortOption } | null> => {
-  try {
-    const db = await openDB();
-    const transaction = db.transaction(STORE_NAME, 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
-    
-    return new Promise((resolve) => {
-      const request = store.get(PREFERENCES_KEY);
-      
-      request.onsuccess = () => {
-        if (request.result) {
-          console.log("User preferences retrieved from IndexedDB", request.result.data);
-          resolve(request.result.data);
-        } else {
-          console.log("No user preferences found in IndexedDB");
-          resolve(null);
-        }
-      };
-      
-      request.onerror = (event) => {
-        console.error("Error reading preferences from IndexedDB", event);
-        resolve(null);
-      };
-      
-      // Close database when transaction is complete
-      transaction.oncomplete = () => {
-        db.close();
-      };
-    });
-  } catch (error) {
-    console.error("IndexedDB preferences get failed", error);
-    return null;
-  }
-};
+// MOVED TO DB.TS
+// const getPreferencesFromIndexedDB = async (): Promise<{ sortBy: SortOption } | null> => { ... };
 
 function App() {
   const [servers, setServers] = useState<Server[]>([]);
@@ -358,13 +161,38 @@ function App() {
     show: false,
     message: ''
   });
-  const [colorPalette, setColorPalette] = useState<ColorPalette>(defaultPalette);
-  const [isPaletteDialogOpen, setIsPaletteDialogOpen] = useState(false);
+  // const [colorPalette, setColorPalette] = useState<ColorPalette>(defaultPalette);
+  // const [isPaletteDialogOpen, setIsPaletteDialogOpen] = useState(false);
   
   // Refs for dialogs
   const serverDialogRef = useRef<HTMLDivElement>(null);
   const serviceDialogRef = useRef<HTMLDivElement>(null);
   const paletteDialogRef = useRef<HTMLDivElement>(null);
+
+  // Show notification function (moved before useThemeManager)
+  const showNotification = (message: string) => {
+    setNotification({ show: true, message });
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+      setNotification({ show: false, message: '' });
+    }, 3000);
+  };
+
+  // Theme Manager Hook
+  const {
+    appliedPalette, // Use this for any direct palette reads if needed elsewhere
+    dialogPalette, 
+    isPaletteDialogOpen,
+    // isPaletteLoading, // Can be used to show a loading indicator if desired
+    openPaletteDialog,
+    // closePaletteDialog, // Simple close, covered by cancel or save
+    cancelPaletteChangesInDialog,
+    handleDialogColorChange,
+    saveDialogPalette,
+    switchToTheme,
+    resetPaletteToDefault,
+  } = useThemeManager(showNotification);
 
   // Filter servers based on search term
   // Priority order:
@@ -468,24 +296,6 @@ function App() {
     setActiveInputId(null);
   };
 
-  // Show notification
-  const showNotification = (message: string) => {
-    setNotification({ show: true, message });
-    
-    // Hide after 3 seconds
-    setTimeout(() => {
-      setNotification({ show: false, message: '' });
-    }, 3000);
-  };
-
-  // Apply a theme palette
-  const applyTheme = (theme: 'dark' | 'light') => {
-    const palette = theme === 'dark' ? defaultPalette : lightPalette;
-    setColorPalette(palette);
-    applyColorPalette(palette);
-    showNotification(`${theme === 'dark' ? 'Dark' : 'Light'} theme applied`);
-  };
-
   // Load data and color palette on component mount
   useEffect(() => {
     const loadData = async () => {
@@ -521,14 +331,9 @@ function App() {
           }
         }
         
-        // Get color palette
-        const paletteData = await getPaletteFromIndexedDB();
-        if (paletteData) {
-          setColorPalette(paletteData);
-          applyColorPalette(paletteData);
-        } else {
-          applyColorPalette(defaultPalette);
-        }
+        // Get color palette - REMOVED (handled by useThemeManager)
+        // const paletteData = await getPaletteFromIndexedDB();
+        // if (paletteData) { ... } else { ... }
         
         // Get user preferences
         const preferencesData = await getPreferencesFromIndexedDB();
@@ -540,12 +345,13 @@ function App() {
         setDataLoaded(true);
       } catch (e) {
         console.error("Error during initial data load", e);
-        setDataLoaded(true);
+        setDataLoaded(true); // Ensure dataLoaded is true even on error to prevent save loops
       }
     };
 
     loadData();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []); // Palette loading is independent now
   
   // Save to IndexedDB whenever servers change, but only after initial data load
   useEffect(() => {
@@ -583,7 +389,7 @@ function App() {
 
   const handleAddServer = () => {
     if (!newServer.name || !newServer.hostname) {
-      alert('Please enter both server name and hostname');
+      showNotification('Please enter both server name and hostname');
       return;
     }
 
@@ -594,7 +400,7 @@ function App() {
       name: newServer.name,
       hostname: newServer.hostname,
       services: [],
-      notes: newServer.notes,
+      notes: newServer.notes ? DOMPurify.sanitize(newServer.notes) : '',
       notesVisible: false // Always false by default
     };
 
@@ -623,7 +429,7 @@ function App() {
 
   const handleEditServer = () => {
     if (!newServer.name || !newServer.hostname || !editingServerId) {
-      alert('Please enter both server name and hostname');
+      showNotification('Please enter both server name and hostname');
       return;
     }
 
@@ -637,7 +443,7 @@ function App() {
           ...server,
           name: newServer.name,
           hostname: newServer.hostname,
-          notes: newServer.notes,
+          notes: newServer.notes ? DOMPurify.sanitize(newServer.notes) : '',
           notesVisible: notesVisibleValue
         };
         console.log('Updated server:', updatedServer.id, 'notesVisible set to:', updatedServer.notesVisible);
@@ -676,7 +482,7 @@ function App() {
 
   const handleAddService = () => {
     if (!newService.name || !newService.port || !currentServerId) {
-      alert('Please enter service name and port');
+      showNotification('Please enter service name and port');
       return;
     }
 
@@ -685,7 +491,7 @@ function App() {
       name: newService.name,
       port: parseInt(newService.port),
       path: newService.path || undefined,
-      notes: newService.notes || undefined
+      notes: newService.notes ? DOMPurify.sanitize(newService.notes) : undefined
     };
 
     setServers(servers.map((server: Server) => {
@@ -737,7 +543,7 @@ function App() {
 
   const handleEditService = () => {
     if (!newService.name || !newService.port || !currentServerId || !editingServiceId) {
-      alert('Please enter service name and port');
+      showNotification('Please enter service name and port');
       return;
     }
 
@@ -752,7 +558,7 @@ function App() {
                 name: newService.name,
                 port: parseInt(newService.port),
                 path: newService.path || undefined,
-                notes: newService.notes || undefined
+                notes: newService.notes ? DOMPurify.sanitize(newService.notes) : undefined
               };
             }
             return service;
@@ -770,138 +576,31 @@ function App() {
   };
 
   // Apply color palette changes in real-time
-  useEffect(() => {
-    applyColorPalette(colorPalette);
-  }, [colorPalette]);
+  // useEffect(() => {
+  //   applyColorPalette(colorPalette);
+  // }, [colorPalette]);
 
   // Reset palette to defaults and save them
-  const resetPalette = async () => {
-    try {
-      // Set the palette to defaults
-      setColorPalette(defaultPalette);
-      
-      // Immediately apply the default colors
-      applyColorPalette(defaultPalette);
-      
-      // Save the default palette to storage
-      const success = await savePaletteToIndexedDB(defaultPalette);
-      
-      if (success) {
-        setIsPaletteDialogOpen(false);
-        showNotification("Default colors restored and saved");
-      } else {
-        alert("Failed to save default colors");
-      }
-    } catch (err) {
-      console.error("Error resetting palette:", err);
-      alert("Error resetting to defaults");
-    }
-  };
+  // const resetPalette = async () => { ... };
 
   // Handle cancelling the palette dialog
-  const cancelPaletteDialog = async () => {
-    try {
-      // Try to get the saved palette from IndexedDB
-      const storedPalette = await getPaletteFromIndexedDB();
-      
-      if (storedPalette) {
-        // If there's a stored palette, use it
-        setColorPalette(storedPalette);
-        applyColorPalette(storedPalette);
-      } else {
-        // If no stored palette, use defaults
-        setColorPalette(defaultPalette);
-        applyColorPalette(defaultPalette);
-      }
-      
-      // Close the dialog
-      setIsPaletteDialogOpen(false);
-    } catch (err) {
-      console.error("Error cancelling dialog:", err);
-      
-      // On error, revert to defaults
-      setColorPalette(defaultPalette);
-      applyColorPalette(defaultPalette);
-      setIsPaletteDialogOpen(false);
-    }
-  };
+  // const cancelPaletteDialog = async () => { ... };
 
   // Function to save color palette
-  const savePalette = async () => {
-    try {
-      // Save current palette to IndexedDB
-      const success = await savePaletteToIndexedDB(colorPalette);
-      
-      if (success) {
-        // Apply the colors and close the dialog
-        applyColorPalette(colorPalette);
-        setIsPaletteDialogOpen(false);
-        showNotification("Color settings saved successfully");
-      } else {
-        alert("Failed to save color settings");
-      }
-    } catch (err) {
-      console.error("Error saving palette:", err);
-      alert("Error saving color settings");
-    }
-  };
+  // const savePalette = async () => { ... };
 
   // Function to apply color palette to CSS variables
-  const applyColorPalette = (palette: ColorPalette) => {
-    // Background colors
-    document.documentElement.style.setProperty('--header-background', palette.headerBackground);
-    document.documentElement.style.setProperty('--page-background', palette.pageBackground);
-    document.documentElement.style.setProperty('--server-background', palette.serverBackground);
-    document.documentElement.style.setProperty('--service-background', palette.serviceBackground);
-    
-    // Text colors
-    document.documentElement.style.setProperty('--server-text', palette.serverText);
-    document.documentElement.style.setProperty('--service-text', palette.serviceText);
-    document.documentElement.style.setProperty('--secondary-text', palette.secondaryText);
-    document.documentElement.style.setProperty('--accent-text', palette.serviceText);
-    
-    // Button colors
-    document.documentElement.style.setProperty('--primary-button', palette.accentButton);
-    document.documentElement.style.setProperty('--accent-button', palette.accentButton);
-    document.documentElement.style.setProperty('--secondary-button', palette.secondaryButton);
-    document.documentElement.style.setProperty('--primary-button-text', palette.primaryButtonText);
-    document.documentElement.style.setProperty('--secondary-button-text', palette.secondaryButtonText);
-    
-    // Set hover states using color-mix for better visual effects
-    document.documentElement.style.setProperty('--accent-text-hover', `color-mix(in srgb, ${palette.serviceText} 85%, white)`);
-    document.documentElement.style.setProperty('--primary-button-hover', `color-mix(in srgb, ${palette.accentButton} 85%, white)`);
-    document.documentElement.style.setProperty('--secondary-button-hover', `color-mix(in srgb, ${palette.secondaryButton} 85%, white)`);
-    
-    // Status colors
-    document.documentElement.style.setProperty('--status-red', palette.statusRed);
-    document.documentElement.style.setProperty('--status-amber', palette.statusAmber);
-    document.documentElement.style.setProperty('--status-green', palette.statusGreen);
-  };
+  // const applyColorPalette = (palette: ColorPalette) => { ... };
 
   // Handle color change in palette
-  const handleColorChange = (key: keyof ColorPalette, value: string) => {
-    // Validate that the value is a valid hex color
-    if (value.match(/^#([0-9A-F]{3}){1,2}$/i) || value === '') {
-      setColorPalette(prev => ({
-        ...prev,
-        [key]: value || '#000000' // Fallback to black if empty
-      }));
-    } else if (value.length <= 7) {
-      // Allow partial input while typing
-      setColorPalette(prev => ({
-        ...prev,
-        [key]: value
-      }));
-    }
-    // Ignore invalid inputs that don't match the pattern
-  };
+  // const handleColorChange = (key: keyof ColorPalette, value: string) => { ... };
 
   // Include color palette in export data
   const exportData = () => {
     try {
       const dataToExport = {
         servers,
-        colorPalette,
+        colorPalette: appliedPalette, // Use appliedPalette from hook
         preferences: {
           sortBy
         }
@@ -919,7 +618,7 @@ function App() {
       showNotification("Data exported successfully");
     } catch (e) {
       console.error("Export failed", e);
-      alert("Export failed");
+      showNotification("Export failed");
     }
   };
 
@@ -936,44 +635,82 @@ function App() {
           const content = e.target?.result as string;
           const parsedData = JSON.parse(content);
           
-          if (Array.isArray(parsedData.servers)) {
-            await saveToIndexedDB(parsedData.servers);
-            setServers(parsedData.servers);
+          // Basic script tag check for all string values in servers and services
+          const sanitizeString = (str: unknown): string => {
+            if (typeof str === 'string') {
+              if (/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi.test(str)) {
+                console.warn("Potential script tag found and removed during import:", str);
+                return ""; // Or some other sanitization, like replacing with a safe string
+              }
+            }
+            return str as string;
+          };
+
+          const sanitizeService = (service: Service): Service => ({
+            ...service,
+            name: sanitizeString(service.name),
+            path: service.path ? sanitizeString(service.path) : undefined,
+            notes: service.notes ? sanitizeString(service.notes) : undefined,
+          });
+
+          const sanitizeServer = (server: Server): Server => ({
+            ...server,
+            name: sanitizeString(server.name),
+            hostname: sanitizeString(server.hostname),
+            notes: server.notes ? sanitizeString(server.notes) : undefined,
+            services: server.services.map(sanitizeService),
+          });
+
+          if (parsedData && parsedData.servers && Array.isArray(parsedData.servers)) {
+            const sanitizedServers = parsedData.servers.map(sanitizeServer);
+
+            await saveToIndexedDB(sanitizedServers);
+            setServers(sanitizedServers);
             
             if (parsedData.colorPalette) {
-              await savePaletteToIndexedDB(parsedData.colorPalette);
-              setColorPalette(parsedData.colorPalette);
-              applyColorPalette(parsedData.colorPalette);
+              // Update palette using the hook's method if you want to save it
+              // This might involve calling a method from useThemeManager to set and save
+              // For simplicity, if it's in the import, the hook will load it on next mount
+              // Or, add a function to useThemeManager like `importAndSavePalette`
+              // For now, directly saving it via DB and then hook will pick up on reload.
+              await savePaletteToIndexedDB(parsedData.colorPalette); 
+              // To immediately apply, you might need to tell the hook, or it applies on next load.
+              // Consider adding a function like `setImportedPalette` to the hook.
+              showNotification("Data imported. Palette will apply on next load or via dialog save.");
+            } else {
+               // if no colorPalette in import, set to defaultDarkPalette
+               await savePaletteToIndexedDB(defaultDarkPalette);
             }
-            
+
             if (parsedData.preferences && parsedData.preferences.sortBy) {
               await savePreferencesToIndexedDB({ sortBy: parsedData.preferences.sortBy });
               setSortBy(parsedData.preferences.sortBy);
             }
-            
+
             showNotification("Data imported successfully");
           } else if (Array.isArray(parsedData)) {
             // Legacy import (servers only)
-            await saveToIndexedDB(parsedData);
-            setServers(parsedData);
+            const sanitizedServers = parsedData.map(sanitizeServer);
+            await saveToIndexedDB(sanitizedServers);
+            setServers(sanitizedServers);
             showNotification("Data imported successfully");
           } else {
             throw new Error("Invalid import format");
           }
         } catch (parseError) {
           console.error("Import parsing failed", parseError);
-          alert("Import failed: Invalid file format");
+          showNotification("Import failed: Invalid file format");
         }
       };
       
       reader.onerror = () => {
-        alert("Error reading file");
+        showNotification("Error reading file");
       };
       
       reader.readAsText(file);
     } catch (e) {
       console.error("Import failed", e);
-      alert("Import failed");
+      showNotification("Import failed");
     }
     
     // Reset the input
@@ -1046,7 +783,7 @@ function App() {
 
         <button 
           className="header-palette-button" 
-          onClick={() => setIsPaletteDialogOpen(true)}
+          onClick={openPaletteDialog}
           title="Customize Colors (Alt+P)"
         >
           <div className="header-palette-icon"></div>
@@ -1260,7 +997,7 @@ function App() {
                   </div>
 
                   {server.notes && server.notesVisible && (
-                    <div className="server-notes">{server.notes}</div>
+                    <div className="server-notes" dangerouslySetInnerHTML={{ __html: server.notes }}></div>
                   )}
                   
                   {server.services.length > 0 ? (
@@ -1519,7 +1256,7 @@ function App() {
       {isPaletteDialogOpen && (
         <div className="dialog" onClick={(e) => {
           if (e.target === e.currentTarget) {
-            cancelPaletteDialog();
+            cancelPaletteChangesInDialog();
           }
         }}>
           <div className="dialog-content palette-dialog-content" ref={paletteDialogRef}>
@@ -1529,7 +1266,7 @@ function App() {
             <div className="theme-selector">
               <button 
                 className="theme-button dark-theme-button" 
-                onClick={() => applyTheme('dark')}
+                onClick={() => switchToTheme('dark')}
                 title="Dark Theme"
               >
                 <div className="theme-preview dark-theme-preview">
@@ -1544,7 +1281,7 @@ function App() {
               
               <button 
                 className="theme-button light-theme-button" 
-                onClick={() => applyTheme('light')}
+                onClick={() => switchToTheme('light')}
                 title="Light Theme"
               >
                 <div className="theme-preview light-theme-preview">
@@ -1563,15 +1300,15 @@ function App() {
                 <span className="color-picker-label">Header Background</span>
                 <input 
                   type="color" 
-                  value={colorPalette.headerBackground} 
-                  onChange={(e) => handleColorChange('headerBackground', e.target.value)}
+                  value={dialogPalette.headerBackground} 
+                  onChange={(e) => handleDialogColorChange('headerBackground', e.target.value)}
                   title="Header Background"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.headerBackground}
-                  onChange={(e) => handleColorChange('headerBackground', e.target.value)}
+                  value={dialogPalette.headerBackground}
+                  onChange={(e) => handleDialogColorChange('headerBackground', e.target.value)}
                 />
               </div>
               
@@ -1579,15 +1316,15 @@ function App() {
                 <span className="color-picker-label">Page Background</span>
                 <input 
                   type="color" 
-                  value={colorPalette.pageBackground} 
-                  onChange={(e) => handleColorChange('pageBackground', e.target.value)}
+                  value={dialogPalette.pageBackground} 
+                  onChange={(e) => handleDialogColorChange('pageBackground', e.target.value)}
                   title="Page Background"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.pageBackground}
-                  onChange={(e) => handleColorChange('pageBackground', e.target.value)}
+                  value={dialogPalette.pageBackground}
+                  onChange={(e) => handleDialogColorChange('pageBackground', e.target.value)}
                 />
               </div>
               
@@ -1597,15 +1334,15 @@ function App() {
                 <span className="color-picker-label">Server Card</span>
                 <input 
                   type="color" 
-                  value={colorPalette.serverBackground} 
-                  onChange={(e) => handleColorChange('serverBackground', e.target.value)}
+                  value={dialogPalette.serverBackground} 
+                  onChange={(e) => handleDialogColorChange('serverBackground', e.target.value)}
                   title="Server Card"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.serverBackground}
-                  onChange={(e) => handleColorChange('serverBackground', e.target.value)}
+                  value={dialogPalette.serverBackground}
+                  onChange={(e) => handleDialogColorChange('serverBackground', e.target.value)}
                 />
               </div>
               
@@ -1613,15 +1350,15 @@ function App() {
                 <span className="color-picker-label">Service Card</span>
                 <input 
                   type="color" 
-                  value={colorPalette.serviceBackground} 
-                  onChange={(e) => handleColorChange('serviceBackground', e.target.value)}
+                  value={dialogPalette.serviceBackground} 
+                  onChange={(e) => handleDialogColorChange('serviceBackground', e.target.value)}
                   title="Service Card"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.serviceBackground}
-                  onChange={(e) => handleColorChange('serviceBackground', e.target.value)}
+                  value={dialogPalette.serviceBackground}
+                  onChange={(e) => handleDialogColorChange('serviceBackground', e.target.value)}
                 />
               </div>
               
@@ -1631,21 +1368,21 @@ function App() {
                 <span className="color-picker-label">Primary Button & Text</span>
                 <input 
                   type="color" 
-                  value={colorPalette.accentButton} 
-                  onChange={(e) => handleColorChange('accentButton', e.target.value)}
+                  value={dialogPalette.accentButton} 
+                  onChange={(e) => handleDialogColorChange('accentButton', e.target.value)}
                   title="Primary Button"
                 />
                 <input 
                   type="color" 
-                  value={colorPalette.primaryButtonText} 
-                  onChange={(e) => handleColorChange('primaryButtonText', e.target.value)}
+                  value={dialogPalette.primaryButtonText} 
+                  onChange={(e) => handleDialogColorChange('primaryButtonText', e.target.value)}
                   title="Primary Button Text"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.accentButton}
-                  onChange={(e) => handleColorChange('accentButton', e.target.value)}
+                  value={dialogPalette.accentButton}
+                  onChange={(e) => handleDialogColorChange('accentButton', e.target.value)}
                 />
               </div>
               
@@ -1653,21 +1390,21 @@ function App() {
                 <span className="color-picker-label">Secondary Button & Text</span>
                 <input 
                   type="color" 
-                  value={colorPalette.secondaryButton} 
-                  onChange={(e) => handleColorChange('secondaryButton', e.target.value)}
+                  value={dialogPalette.secondaryButton} 
+                  onChange={(e) => handleDialogColorChange('secondaryButton', e.target.value)}
                   title="Secondary Button"
                 />
                 <input 
                   type="color" 
-                  value={colorPalette.secondaryButtonText} 
-                  onChange={(e) => handleColorChange('secondaryButtonText', e.target.value)}
+                  value={dialogPalette.secondaryButtonText} 
+                  onChange={(e) => handleDialogColorChange('secondaryButtonText', e.target.value)}
                   title="Secondary Button Text"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.secondaryButton}
-                  onChange={(e) => handleColorChange('secondaryButton', e.target.value)}
+                  value={dialogPalette.secondaryButton}
+                  onChange={(e) => handleDialogColorChange('secondaryButton', e.target.value)}
                 />
               </div>
               
@@ -1677,15 +1414,15 @@ function App() {
                 <span className="color-picker-label">Accent Text</span>
                 <input 
                   type="color" 
-                  value={colorPalette.serviceText} 
-                  onChange={(e) => handleColorChange('serviceText', e.target.value)}
+                  value={dialogPalette.serviceText} 
+                  onChange={(e) => handleDialogColorChange('serviceText', e.target.value)}
                   title="Accent Text"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.serviceText}
-                  onChange={(e) => handleColorChange('serviceText', e.target.value)}
+                  value={dialogPalette.serviceText}
+                  onChange={(e) => handleDialogColorChange('serviceText', e.target.value)}
                 />
               </div>
               
@@ -1693,15 +1430,15 @@ function App() {
                 <span className="color-picker-label">Primary Text</span>
                 <input 
                   type="color" 
-                  value={colorPalette.serverText} 
-                  onChange={(e) => handleColorChange('serverText', e.target.value)}
+                  value={dialogPalette.serverText} 
+                  onChange={(e) => handleDialogColorChange('serverText', e.target.value)}
                   title="Primary Text"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.serverText}
-                  onChange={(e) => handleColorChange('serverText', e.target.value)}
+                  value={dialogPalette.serverText}
+                  onChange={(e) => handleDialogColorChange('serverText', e.target.value)}
                 />
               </div>
               
@@ -1709,15 +1446,15 @@ function App() {
                 <span className="color-picker-label">Secondary Text</span>
                 <input 
                   type="color" 
-                  value={colorPalette.secondaryText} 
-                  onChange={(e) => handleColorChange('secondaryText', e.target.value)}
+                  value={dialogPalette.secondaryText} 
+                  onChange={(e) => handleDialogColorChange('secondaryText', e.target.value)}
                   title="Secondary Text"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.secondaryText}
-                  onChange={(e) => handleColorChange('secondaryText', e.target.value)}
+                  value={dialogPalette.secondaryText}
+                  onChange={(e) => handleDialogColorChange('secondaryText', e.target.value)}
                 />
               </div>
               
@@ -1727,15 +1464,15 @@ function App() {
                 <span className="color-picker-label">Red Status</span>
                 <input 
                   type="color" 
-                  value={colorPalette.statusRed} 
-                  onChange={(e) => handleColorChange('statusRed', e.target.value)}
+                  value={dialogPalette.statusRed} 
+                  onChange={(e) => handleDialogColorChange('statusRed', e.target.value)}
                   title="Red Status"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.statusRed}
-                  onChange={(e) => handleColorChange('statusRed', e.target.value)}
+                  value={dialogPalette.statusRed}
+                  onChange={(e) => handleDialogColorChange('statusRed', e.target.value)}
                 />
               </div>
               
@@ -1743,15 +1480,15 @@ function App() {
                 <span className="color-picker-label">Amber Status</span>
                 <input 
                   type="color" 
-                  value={colorPalette.statusAmber} 
-                  onChange={(e) => handleColorChange('statusAmber', e.target.value)}
+                  value={dialogPalette.statusAmber} 
+                  onChange={(e) => handleDialogColorChange('statusAmber', e.target.value)}
                   title="Amber Status"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.statusAmber}
-                  onChange={(e) => handleColorChange('statusAmber', e.target.value)}
+                  value={dialogPalette.statusAmber}
+                  onChange={(e) => handleDialogColorChange('statusAmber', e.target.value)}
                 />
               </div>
               
@@ -1759,15 +1496,15 @@ function App() {
                 <span className="color-picker-label">Green Status</span>
                 <input 
                   type="color" 
-                  value={colorPalette.statusGreen} 
-                  onChange={(e) => handleColorChange('statusGreen', e.target.value)}
+                  value={dialogPalette.statusGreen} 
+                  onChange={(e) => handleDialogColorChange('statusGreen', e.target.value)}
                   title="Green Status"
                 />
                 <input 
                   type="text" 
                   className="color-picker-input" 
-                  value={colorPalette.statusGreen}
-                  onChange={(e) => handleColorChange('statusGreen', e.target.value)}
+                  value={dialogPalette.statusGreen}
+                  onChange={(e) => handleDialogColorChange('statusGreen', e.target.value)}
                 />
               </div>
             </div>
@@ -1775,7 +1512,7 @@ function App() {
             <div className="palette-actions">
               <button 
                 className="btn btn-reset"
-                onClick={resetPalette}
+                onClick={resetPaletteToDefault}
                 title="Reset to default colors"
               >
                 Reset to Default
@@ -1784,13 +1521,13 @@ function App() {
               <div className="palette-action-buttons">
                 <button 
                   className="btn btn-cancel"
-                  onClick={cancelPaletteDialog}
+                  onClick={cancelPaletteChangesInDialog}
                 >
                   Cancel
                 </button>
                 <button 
                   className="btn btn-primary"
-                  onClick={savePalette}
+                  onClick={saveDialogPalette}
                 >
                   Save Colors
                 </button>

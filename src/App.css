@@ -1,17 +1,17 @@
 :root {
-  /* Color Variables */
+  /* Color Variables - Light Theme Default */
   --header-background: #E9FDF1;
   --page-background: #F2F2F2;
   --server-background: #FFFFFF;
   --service-background: #C9CFD1;
   --server-text: #2C3E50;
-  --service-text: #2DBE60;
-  --accent-text: #2DBE60;
-  --accent-text-hover: color-mix(in srgb, #2DBE60 85%, white);
+  --service-text: #00a82d;
+  --accent-text: #00a82d;
+  --accent-text-hover: color-mix(in srgb, #00a82d 85%, white);
   --secondary-text: #7D7D7D;
-  --accent-button: #2DBE60;
-  --primary-button: #2DBE60;
-  --primary-button-hover: color-mix(in srgb, #2DBE60 85%, white);
+  --accent-button: #00a82d;
+  --primary-button: #00a82d;
+  --primary-button-hover: color-mix(in srgb, #00a82d 85%, white);
   --secondary-button: #C9CFD1;
   --secondary-button-hover: color-mix(in srgb, #C9CFD1 85%, white);
   --primary-button-text: #FFFFFF;
@@ -52,8 +52,7 @@
   --line-height-compact: 1.4; /* Compact text (notes, descriptions) */
   
   /* Fixed Component Heights */
-  --height-button: 38px;      /* Standard button height */
-  --height-service: 40px;     /* Service item height */
+  --height-button: 38px;      /* Standard button height (also used for service items) */
 }
 
 body {
@@ -356,11 +355,15 @@ kbd {
 .search-container {
   flex: 1;
   margin: 0 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .search-bar {
   position: relative;
   width: 100%;
+  max-width: 500px;
 }
 
 .search-input {
@@ -479,11 +482,17 @@ kbd {
 /* Header palette button styling */
 .header-palette-button {
   margin-left: auto;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--server-text);
+  border-radius: 4px;
 }
 
 .header-palette-button:hover {
   color: var(--accent-text);
-  background-color: transparent;
+  background-color: var(--hover-palette-button);
 }
 
 .header-palette-icon {
@@ -1139,11 +1148,12 @@ textarea::placeholder {
 /* Simple server-card base styles */
 .servers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, max-content));
   gap: 1rem;
   width: 100%;
   margin: 0;
   padding: 0;
+  justify-content: start;
 }
 
 .server-card {
@@ -1151,6 +1161,9 @@ textarea::placeholder {
   border-radius: 8px;
   padding: 1.5rem;
   margin: 0;
+  width: fit-content;
+  min-width: 300px;
+  max-width: 450px;
 }
 
 .server-name {
@@ -1188,7 +1201,8 @@ textarea::placeholder {
   padding: 0 1rem;
   border-radius: 4px;
   margin-bottom: 0.5rem;
-  height: var(--height-service);
+  height: var(--height-button);
+  min-height: var(--height-button);
 }
 
 .service-content {
@@ -1199,7 +1213,7 @@ textarea::placeholder {
 }
 
 .service-name {
-  color: var(--primary-text);
+  color: var(--service-text);
   font-size: var(--font-size-base);
 }
 
