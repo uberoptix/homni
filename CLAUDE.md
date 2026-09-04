@@ -7,6 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Canonical repo:** `github.com/uberoptix/homni` (public).
 - **Working copy:** `~/projects/homni.io` on the IONOS VPS (`ssh ionos`) — the sole active working copy. Run Claude Code sessions from here.
 - **Laptop:** no longer used for this project. The former laptop copy was archived to `~/Documents/Sites/ARCHIVE/homni.io` on 2026-07-20 (reference only — do not edit or deploy from there).
+- **Commits can also land on GitHub without touching this checkout.** Claude Code cloud
+  sessions work on GitHub directly (the `claude/security-qaqc-review-cmdPB` PR merged
+  2026-08-30 was one). Run `git pull --ff-only` here before editing, and never assume
+  this checkout is ahead of `origin/main` without checking. The laptop copy under
+  `~/Documents/GitHub/homni` is retired too; only this checkout and GitHub count.
 - **Deployment (unchanged):** GitHub → Cloudflare Pages auto-builds `main` on push (see Deployment section below). There is no VPS-side deploy step for the live site — where the working copy lives has no effect on how homni.io is served.
 
 ## Project Overview
