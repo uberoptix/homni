@@ -1256,7 +1256,10 @@ function App() {
           const content = e.target?.result as string;
           const parsedData = JSON.parse(content);
 
-          let serversToImport: unknown[] | null = null;
+          // Assigning an `any` (parsed JSON) reset TypeScript's narrowing and left the
+          // declared `| null` in play at every later use; definite assignment covers it
+          // because the else branch throws.
+          let serversToImport: unknown[];
 
           if (Array.isArray(parsedData.servers)) {
             serversToImport = parsedData.servers;
