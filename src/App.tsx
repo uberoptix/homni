@@ -1,4 +1,19 @@
 import { useState, useEffect, useRef } from 'react'
+
+// crypto.randomUUID() only exists in secure contexts (HTTPS or localhost). The documented
+// self-host deployment serves plain HTTP on :808, where it is undefined and Add Server /
+// Add Service threw inside the click handler (HM-001). Fall back to a v4 UUID built from
+// getRandomValues, which is available everywhere.
+const newId = (): string => {
+  const c = globalThis.crypto;
+  if (c && typeof c.randomUUID === 'function') return c.randomUUID();
+  const b = new Uint8Array(16);
+  c.getRandomValues(b);
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const h = Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+};
 import './App.css'
 import React from 'react'
 import FlexGrid from './components/MasonryGrid'
@@ -456,6 +471,15 @@ function App() {
   const [sortBy, setSortBy] = useState<SortOption>('name');
   const [, setStorageType] = useState<StorageType>('indexedDB');
   const [dataLoaded, setDataLoaded] = useState(false);
+  // HM-002: persist only after a user mutation, and never after a failed load. Before this,
+  // any throw during the initial load left `servers` as [] with dataLoaded=true, and the save
+  // effect then overwrote the stored dashboard with an empty list.
+  const dirtyRef = useRef(false);
+  const loadFailedRef = useRef(false);
+  const mutateServers = (next: Server[]) => {
+    dirtyRef.current = true;
+    setServers(next);
+  };
   const [, setActiveInputId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
@@ -696,6 +720,8 @@ function App() {
         setDataLoaded(true);
       } catch (e) {
         console.error("Error during initial data load", e);
+        loadFailedRef.current = true;
+        showNotification("Your saved dashboard could not be read. Changes will not be saved until you reload.", true);
         setDataLoaded(true);
       }
     };
@@ -705,12 +731,12 @@ function App() {
   
   // Save to IndexedDB whenever servers change, but only after initial data load
   useEffect(() => {
-    // Don't save until the initial data is loaded
-    if (!dataLoaded) {
+    // Don't save until the initial data is loaded, never after a failed load (the stored
+    // copy is the user's only copy), and only once the user has actually changed something.
+    if (!dataLoaded || loadFailedRef.current || !dirtyRef.current) {
       return;
     }
-    
-    
+
     const saveData = async () => {
       try {
         const success = await saveToIndexedDB(servers);
@@ -872,7 +898,7 @@ function App() {
     }
 
     const server: Server = {
-      id: crypto.randomUUID(),
+      id: newId(),
       name: newServer.name,
       hostname: newServer.hostname,
       services: [],
@@ -880,7 +906,7 @@ function App() {
       notesVisible: false // Always false by default
     };
 
-    setServers([...servers, server]);
+    mutateServers([...servers, server]);
     setNewServer({ name: '', hostname: '', notes: '', notesVisible: false });
     setIsDialogOpen(false);
   };
@@ -915,7 +941,7 @@ function App() {
 
     const notesVisibleValue = Boolean(newServer.notesVisible);
 
-    setServers(servers.map((server: Server) => {
+    mutateServers(servers.map((server: Server) => {
       if (server.id === editingServerId) {
         const updatedServer = {
           ...server,
@@ -938,7 +964,7 @@ function App() {
 
   const handleDeleteServer = (serverId: string) => {
     if (confirm('Are you sure you want to delete this server?')) {
-      setServers(servers.filter((server: Server) => server.id !== serverId));
+      mutateServers(servers.filter((server: Server) => server.id !== serverId));
     }
   };
 
@@ -961,7 +987,7 @@ function App() {
     }
 
     const service: Service = {
-      id: crypto.randomUUID(),
+      id: newId(),
       name: newService.name,
       port: portNum,
       path: newService.path || undefined,
@@ -969,7 +995,7 @@ function App() {
       protocol: newService.protocol
     };
 
-    setServers(servers.map((server: Server) => {
+    mutateServers(servers.map((server: Server) => {
       if (server.id === currentServerId) {
         return {
           ...server,
@@ -985,7 +1011,7 @@ function App() {
 
   const handleDeleteService = (serverId: string, serviceId: string) => {
     if (confirm('Are you sure you want to delete this service?')) {
-      setServers(servers.map((server: Server) => {
+      mutateServers(servers.map((server: Server) => {
         if (server.id === serverId) {
           return {
             ...server,
@@ -1034,7 +1060,7 @@ function App() {
       return;
     }
 
-    setServers(servers.map((server: Server) => {
+    mutateServers(servers.map((server: Server) => {
       if (server.id === currentServerId) {
         return {
           ...server,
@@ -1247,7 +1273,7 @@ function App() {
 
           const validServers = serversToImport as Server[];
           await saveToIndexedDB(validServers);
-          setServers(validServers);
+          mutateServers(validServers);
 
           if (parsedData.colorPalette) {
             if (isValidPalette(parsedData.colorPalette)) {
